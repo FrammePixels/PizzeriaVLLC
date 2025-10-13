@@ -13,10 +13,14 @@ export default function SubNavbar() {
   const { user, logout } = useAuth();
 
   const canAccessDashboard = 
-    user?.role === "admin" || 
-    user?.role === "moderador" || 
-    user?.role === "admin" || 
-    user?.role === "Moderador";
+    user?.role === "Owner" || 
+    user?.role === "Co-Ceo" || 
+    user?.role === "Admin" || 
+    user?.role === "Moderator" || 
+     user?.role === "Owner" || 
+    user?.role === "Co-Ceo" || 
+    user?.role === "Admin" || 
+    user?.role === "Moderator";
 
   const doSearch = () => {
     const q = search.trim();
