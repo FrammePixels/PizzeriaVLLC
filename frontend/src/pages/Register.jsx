@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, User, Zap, Shield, Check } from 'lucide-react';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase'; // ajusta la ruta si hace falta
 
 export default function CyberpunkRegister() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +19,7 @@ export default function CyberpunkRegister() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!acceptTerms) {
       alert('Debes aceptar los términos y condiciones');
       return;
@@ -27,10 +29,17 @@ export default function CyberpunkRegister() {
       return;
     }
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email.trim(), formData.password);
+      await updateProfile(userCredential.user, { displayName: formData.username });
       alert('Registro exitoso - Perfil neural creado');
-    }, 2000);
+      console.log('Usuario registrado:', userCredential.user);
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      alert(`Error al registrar usuario: ${error.code}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getPasswordStrength = () => {
@@ -155,7 +164,6 @@ export default function CyberpunkRegister() {
                 </button>
               </div>
               
-              {/* Password strength indicator */}
               {formData.password && (
                 <div className="mt-2">
                   <div className="flex items-center justify-between mb-1">

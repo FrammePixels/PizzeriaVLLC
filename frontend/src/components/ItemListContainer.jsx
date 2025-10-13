@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase"; // asegúrate de que la ruta sea correcta
 import ItemList from "./ItemList";
 
 export default function ItemListContainer({ showHeader = true }) {
@@ -6,16 +8,22 @@ export default function ItemListContainer({ showHeader = true }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://localhost:5000/products')
-        .then(response => response.json())
-        .then(data => {
-            setProducts(data);
-            setLoading(false);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            setLoading(false);
-        });
+        const getProducts = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                const items = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setProducts(items);
+            } catch (error) {
+                console.error("Error al obtener productos:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getProducts();
     }, []);
 
     if (loading) {
