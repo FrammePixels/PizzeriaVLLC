@@ -1,10 +1,13 @@
-import React from 'react'
-
+ import Error404 from './pages/Error/Error404.jsx'
 const App = () => {
   return (
-    <div>
-      
-    </div>
+
+                          <>
+    <Error404 />
+
+                          </>
+
+
   )
 }
 
