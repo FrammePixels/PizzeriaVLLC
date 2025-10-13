@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Search, Menu, X, ShoppingCart, Heart, Gamepad2, Cpu, Headphones, Monitor, Zap } from "lucide-react"
+import { Search, Menu, X, ShoppingCart, Heart, Gamepad2, Cpu, Headphones, Monitor, Zap, Flame, Trophy, Crown } from "lucide-react"
 import { AiOutlineDashboard, AiOutlineLogout, AiOutlineSetting, AiOutlineLogin, AiOutlineUserAdd, AiOutlineShoppingCart } from "react-icons/ai"
 import { IoPeopleOutline } from "react-icons/io5"
 import { useAuth } from "../context/AuthContext"
@@ -13,17 +13,14 @@ export default function GamerNavbar() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
-  // Carrito simulado (puedes conectarlo con tu contexto de carrito)
   const cartItemsCount = 3
 
-  // Roles que pueden acceder al dashboard
   const canAccessDashboard =
     user?.role === "Owner" ||
     user?.role === "Co-Ceo" ||
     user?.role === "Admin" ||
     user?.role === "Moderator"
 
-  // Función para realizar búsqueda
   const doSearch = () => {
     const q = search.trim()
     if (q.length > 0) navigate(`/products?search=${encodeURIComponent(q)}`)
@@ -32,12 +29,10 @@ export default function GamerNavbar() {
     setIsMobileMenuOpen(false)
   }
 
-  // Ejecutar búsqueda al presionar Enter
   const onKeyDown = (e) => {
     if (e.key === "Enter") doSearch()
   }
 
-  // Logout
   const handleLogout = async () => {
     await logout()
     navigate("/login")
@@ -62,333 +57,330 @@ export default function GamerNavbar() {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
 
   const categories = [
-    { icon: <Gamepad2 size={18} />, name: "Consolas", link: "/category/consolas" },
-    { icon: <Cpu size={18} />, name: "PC Gaming", link: "/category/pc-gaming" },
-    { icon: <Monitor size={18} />, name: "Monitores", link: "/category/monitores" },
-    { icon: <Headphones size={18} />, name: "Periféricos", link: "/category/perifericos" },
+    { icon: <Gamepad2 size={20} />, name: "CONSOLAS & JUEGOS", link: "/category/consolas", color: "from-cyan-500 to-blue-500" },
+    { icon: <Cpu size={20} />, name: "PC GAMING", link: "/category/pc-gaming", color: "from-green-500 to-emerald-500" },
+    { icon: <Monitor size={20} />, name: "MONITORES RGB", link: "/category/monitores", color: "from-purple-500 to-pink-500" },
+    { icon: <Headphones size={20} />, name: "AUDIO GAMER", link: "/category/perifericos", color: "from-orange-500 to-red-500" },
   ]
 
   return (
-    <header className="w-full sticky top-0 z-50 backdrop-blur-md bg-gradient-to-r from-gray-950/98 via-purple-950/98 to-gray-950/98 shadow-2xl border-b border-purple-500/30">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white text-center py-2 text-sm font-semibold tracking-wide">
-        <Zap size={16} className="inline mr-2 animate-pulse" />
-        ¡OFERTAS FLASH! Hasta 50% OFF en productos seleccionados
+    <>
+      {/* Animated Background Effect */}
+      <div className="fixed top-0 left-0 right-0 h-24 z-40 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 via-pink-500 to-orange-500 animate-pulse"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 group"
-          >
-            <div className="relative">
-              <Gamepad2 size={36} className="text-purple-500 group-hover:text-pink-500 transition-colors duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-              <div className="absolute inset-0 bg-purple-500/20 blur-xl group-hover:bg-pink-500/20 transition-colors duration-300"></div>
-            </div>
-            <span className="text-3xl m-2 font-black tracking-tighter bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200">
-              GAMERZONE
+      <header className="w-full sticky top-0 z-50 backdrop-blur-xl bg-black/90 shadow-[0_0_30px_rgba(0,0,0,0.9)] border-b-2 border-cyan-500/50">
+        {/* Cyber Banner */}
+        <div className="relative bg-gradient-to-r from-black via-gray-900 to-black border-b border-cyan-500/30 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDI1NSwyNTUsMC4xKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+          <div className="relative flex items-center justify-center py-2 text-center">
+            <Flame size={18} className="text-orange-500 animate-bounce mr-2" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 font-black text-sm tracking-[0.2em] uppercase animate-pulse">
+              ⚡ MEGA SALE ⚡ 70% OFF EN TODO EL SITIO
             </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6">
-            <Link to="/" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 font-bold text-sm tracking-wide relative group">
-              INICIO
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-200"></span>
-            </Link>
-            
-            <div 
-              className="relative"
-              onMouseEnter={() => setShowCategories(true)}
-              onMouseLeave={() => setShowCategories(false)}
-            >
-              <button className="text-gray-200 hover:text-purple-400 transition-colors duration-200 font-bold text-sm tracking-wide relative group flex items-center gap-1">
-                CATEGORÍAS
-                <span className="text-xs">▼</span>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-200"></span>
-              </button>
-              
-              {showCategories && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-gray-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-purple-500/30 py-2 z-50">
-                  {categories.map((cat, idx) => (
-                    <Link
-                      key={idx}
-                      to={cat.link}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-200 hover:bg-purple-900/30 hover:text-purple-400 transition-all duration-150"
-                    >
-                      <span className="text-purple-500">{cat.icon}</span>
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Link to="/ofertas" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 font-bold text-sm tracking-wide relative group">
-              OFERTAS
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-200"></span>
-            </Link>
-            
-            <Link to="/novedades" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 font-bold text-sm tracking-wide relative group">
-              NOVEDADES
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-200"></span>
-            </Link>
-          </nav>
-
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center">
-            <div className="relative flex items-center bg-gray-900/60 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-all duration-200 overflow-hidden backdrop-blur-sm shadow-lg shadow-purple-500/10">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder="Buscar productos..."
-                className="px-4 py-2.5 text-gray-200 text-sm bg-transparent focus:outline-none w-48 lg:w-64 placeholder-gray-500"
-              />
-              <button
-                onClick={doSearch}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2.5 hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg shadow-purple-500/30"
-              >
-                <Search size={18} className="text-white" />
-              </button>
-            </div>
+            <Flame size={18} className="text-orange-500 animate-bounce ml-2" />
           </div>
-
-          {/* Icons & User Menu Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            {/* Wishlist */}
-            <Link
-              to="/wishlist"
-              className="relative p-2.5 rounded-xl bg-gray-900/60 hover:bg-purple-900/30 border border-purple-500/30 hover:border-purple-500/60 transition-all duration-200 group"
-            >
-              <Heart size={22} className="text-gray-200 group-hover:text-pink-400 transition-colors" />
-            </Link>
-
-            {/* Cart */}
-            <Link
-              to="/cart"
-              className="relative p-2.5 rounded-xl bg-gray-900/60 hover:bg-purple-900/30 border border-purple-500/30 hover:border-purple-500/60 transition-all duration-200 group"
-            >
-              <ShoppingCart size={22} className="text-gray-200 group-hover:text-purple-400 transition-colors" />
-              {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg shadow-pink-500/50 animate-pulse">
-                  {cartItemsCount}
-                </span>
-              )}
-            </Link>
-
-            {/* User Menu */}
-            <div className="relative">
-              {user ? (
-                <>
-                  <button
-                    onClick={toggleDropdown}
-                    className="p-2.5 rounded-xl bg-gray-900/60 hover:bg-purple-900/30 border border-purple-500/30 hover:border-purple-500/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-950"
-                  >
-                    <IoPeopleOutline size={22} className="text-gray-200" />
-                  </button>
-
-                  {isDropdownOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
-                      <div className="absolute right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-xl rounded-xl shadow-2xl border border-purple-500/30 py-2 z-50">
-                        <div className="px-4 py-3 border-b border-purple-500/30">
-                          <p className="text-sm font-semibold text-gray-200">{user.name || user.email}</p>
-                          <p className="text-xs text-purple-400 mt-1">{user.role || "Usuario"}</p>
-                        </div>
-
-                        {canAccessDashboard && (
-                          <button
-                            onClick={goToDashboard}
-                            className="flex items-center w-full px-4 py-3 text-sm text-gray-200 hover:bg-purple-900/30 transition-colors duration-150"
-                          >
-                            <AiOutlineDashboard className="mr-3 h-5 w-5 text-purple-500" />
-                            Dashboard
-                          </button>
-                        )}
-
-                        <Link
-                          to="/orders"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center w-full px-4 py-3 text-sm text-gray-200 hover:bg-purple-900/30 transition-colors duration-150"
-                        >
-                          <AiOutlineShoppingCart className="mr-3 h-5 w-5 text-purple-500" />
-                          Mis Pedidos
-                        </Link>
-
-                        <button
-                          onClick={goToConfiguration}
-                          className="flex items-center w-full px-4 py-3 text-sm text-gray-200 hover:bg-purple-900/30 transition-colors duration-150"
-                        >
-                          <AiOutlineSetting className="mr-3 h-5 w-5 text-purple-500" />
-                          Configuración
-                        </button>
-
-                        <div className="border-t border-purple-500/30 my-2"></div>
-
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-3 text-sm text-red-400 hover:bg-purple-900/30 transition-colors duration-150"
-                        >
-                          <AiOutlineLogout className="mr-3 h-5 w-5 text-red-400" />
-                          Cerrar Sesión
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <div className="flex items-center space-x-3">
-                  <Link
-                    to="/login"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/30"
-                  >
-                    <AiOutlineLogin className="h-5 w-5" />
-                    Ingresar
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-900/60 hover:bg-purple-900/30 text-gray-200 font-semibold text-sm rounded-xl transition-all duration-200 border border-purple-500/30 hover:border-purple-500/60"
-                  >
-                    <AiOutlineUserAdd className="h-5 w-5 text-purple-400" />
-                    Registro
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-gray-200 hover:bg-purple-900/30 focus:outline-none border border-purple-500/30"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden pb-4 space-y-3 animate-in slide-in-from-top">
-            {/* Search bar */}
-            <div className="relative flex items-center bg-gray-900/60 rounded-xl border border-purple-500/30 overflow-hidden mt-3">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder="Buscar productos..."
-                className="px-4 py-2.5 text-gray-200 text-sm bg-transparent focus:outline-none w-full placeholder-gray-500"
-              />
-              <button onClick={doSearch} className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2.5">
-                <Search size={18} className="text-white" />
-              </button>
-            </div>
-
-            {/* Mobile Icons Row */}
-            <div className="flex gap-2 px-2">
-              <Link 
-                to="/wishlist" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900/60 rounded-xl border border-purple-500/30 text-gray-200 hover:bg-purple-900/30"
-              >
-                <Heart size={18} />
-                <span className="text-sm font-semibold">Favoritos</span>
-              </Link>
-              <Link 
-                to="/cart" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900/60 rounded-xl border border-purple-500/30 text-gray-200 hover:bg-purple-900/30 relative"
-              >
-                <ShoppingCart size={18} />
-                <span className="text-sm font-semibold">Carrito</span>
-                {cartItemsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Link>
-            </div>
-
-            {/* Nav Links */}
-            <nav className="flex flex-col space-y-2">
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-200 hover:text-purple-400 transition-colors px-3 py-2.5 rounded-xl hover:bg-purple-900/30 font-bold">
-                INICIO
-              </Link>
-              
-              <div className="px-3 py-2 text-xs font-bold text-purple-400 uppercase tracking-wider">
-                Categorías
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* LOGO CYBERPUNK */}
+            <Link to="/" className="flex items-center gap-2 group relative">
+              <div className="relative">
+                <div className="absolute inset-0 bg-cyan-500 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                <div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 rounded-lg transform group-hover:rotate-180 transition-transform duration-500">
+                  <Gamepad2 size={28} className="text-black" strokeWidth={3} />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]"></div>
               </div>
-              {categories.map((cat, idx) => (
-                <Link 
-                  key={idx}
-                  to={cat.link} 
-                  onClick={() => setIsMobileMenuOpen(false)} 
-                  className="flex items-center gap-3 text-gray-200 hover:text-purple-400 transition-colors px-3 py-2.5 rounded-xl hover:bg-purple-900/30"
-                >
-                  <span className="text-purple-500">{cat.icon}</span>
-                  {cat.name}
-                </Link>
-              ))}
-              
-              <Link to="/ofertas" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-200 hover:text-purple-400 transition-colors px-3 py-2.5 rounded-xl hover:bg-purple-900/30 font-bold">
-                OFERTAS
+              <div className="flex flex-col">
+                <span className="text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300 [text-shadow:_0_0_20px_rgb(34_211_238_/_50%)]">
+                  NEXUS
+                </span>
+                <span className="text-[10px] font-bold tracking-[0.3em] text-cyan-500 uppercase">GAMING STORE</span>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation - ESTILO CYBERPUNK */}
+            <nav className="hidden lg:flex items-center space-x-1">
+              <Link to="/" className="px-4 py-2 text-gray-300 hover:text-cyan-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-cyan-500/30 bg-gradient-to-r hover:from-cyan-500/10 hover:to-transparent">
+                <span className="relative z-10">INICIO</span>
+                <div className="absolute inset-0 bg-cyan-500/0 group-hover:bg-cyan-500/5 transition-all"></div>
               </Link>
-              <Link to="/novedades" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-200 hover:text-purple-400 transition-colors px-3 py-2.5 rounded-xl hover:bg-purple-900/30 font-bold">
-                NOVEDADES
+              
+              <div 
+                className="relative"
+                onMouseEnter={() => setShowCategories(true)}
+                onMouseLeave={() => setShowCategories(false)}
+              >
+                <button className="px-4 py-2 text-gray-300 hover:text-cyan-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase group border-2 border-transparent hover:border-cyan-500/30 bg-gradient-to-r hover:from-cyan-500/10 hover:to-transparent flex items-center gap-2">
+                  <span className="relative z-10">CATEGORÍAS</span>
+                  <span className="text-[8px] group-hover:rotate-180 transition-transform">▼</span>
+                </button>
+                
+                {showCategories && (
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-black/95 backdrop-blur-xl rounded-none border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] z-50 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5"></div>
+                    {categories.map((cat, idx) => (
+                      <Link
+                        key={idx}
+                        to={cat.link}
+                        className="relative flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-300 hover:text-white transition-all duration-150 border-b border-cyan-500/20 last:border-b-0 group/item hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-transparent"
+                      >
+                        <div className={`p-2 rounded bg-gradient-to-br ${cat.color} shadow-lg group-hover/item:scale-110 transition-transform`}>
+                          {cat.icon}
+                        </div>
+                        <span className="tracking-wider">{cat.name}</span>
+                        <div className="ml-auto w-0 h-0.5 bg-cyan-500 group-hover/item:w-4 transition-all"></div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Link to="/ofertas" className="px-4 py-2 text-gray-300 hover:text-orange-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-orange-500/30 bg-gradient-to-r hover:from-orange-500/10 hover:to-transparent">
+                <Flame size={14} className="inline mr-1 animate-pulse" />
+                <span className="relative z-10">OFERTAS</span>
+              </Link>
+              
+              <Link to="/novedades" className="px-4 py-2 text-gray-300 hover:text-purple-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-purple-500/30 bg-gradient-to-r hover:from-purple-500/10 hover:to-transparent">
+                <Crown size={14} className="inline mr-1" />
+                <span className="relative z-10">NEW</span>
               </Link>
             </nav>
 
-            {/* Auth Buttons / User Info */}
-            <div className="border-t border-purple-500/30 pt-3 space-y-2">
-              {user ? (
-                <>
-                  <div className="px-3 py-3 bg-purple-900/20 rounded-xl border border-purple-500/30">
-                    <p className="text-sm font-semibold text-gray-200">{user.name || user.email}</p>
-                    <p className="text-xs text-purple-400 mt-1">{user.role || "Usuario"}</p>
-                  </div>
-
-                  {canAccessDashboard && (
-                    <button onClick={goToDashboard} className="flex items-center w-full px-3 py-2.5 text-sm text-gray-200 hover:bg-purple-900/30 rounded-xl">
-                      <AiOutlineDashboard className="mr-3 h-5 w-5 text-purple-500" />
-                      Dashboard
-                    </button>
-                  )}
-
-                  <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center w-full px-3 py-2.5 text-sm text-gray-200 hover:bg-purple-900/30 rounded-xl">
-                    <AiOutlineShoppingCart className="mr-3 h-5 w-5 text-purple-500" />
-                    Mis Pedidos
-                  </Link>
-
-                  <button onClick={goToConfiguration} className="flex items-center w-full px-3 py-2.5 text-sm text-gray-200 hover:bg-purple-900/30 rounded-xl">
-                    <AiOutlineSetting className="mr-3 h-5 w-5 text-purple-500" />
-                    Configuración
+            {/* Search Bar CYBERPUNK */}
+            <div className="hidden md:flex items-center">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 rounded opacity-30 group-hover:opacity-60 blur transition-opacity"></div>
+                <div className="relative flex items-center bg-black border-2 border-cyan-500/50 group-hover:border-cyan-500 transition-all duration-200 overflow-hidden">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    placeholder="BUSCAR..."
+                    className="px-4 py-2.5 text-cyan-400 text-xs font-bold bg-transparent focus:outline-none w-48 lg:w-56 placeholder-gray-600 tracking-wider uppercase"
+                  />
+                  <button
+                    onClick={doSearch}
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 px-4 py-2.5 hover:from-cyan-400 hover:to-purple-400 transition-all duration-200 relative overflow-hidden group/btn"
+                  >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform"></div>
+                    <Search size={18} className="text-black relative z-10" strokeWidth={3} />
                   </button>
-
-                  <button onClick={handleLogout} className="flex items-center w-full px-3 py-2.5 text-sm text-red-400 hover:bg-purple-900/30 rounded-xl">
-                    <AiOutlineLogout className="mr-3 h-5 w-5 text-red-400" />
-                    Cerrar Sesión
-                  </button>
-                </>
-              ) : (
-                <div className="flex flex-col gap-2 px-3">
-                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/30">
-                    <AiOutlineLogin className="h-5 w-5" />
-                    Ingresar
-                  </Link>
-                  <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 py-2.5 bg-gray-900/60 hover:bg-purple-900/30 text-gray-200 font-semibold text-sm rounded-xl border border-purple-500/30 transition-all duration-200">
-                    <AiOutlineUserAdd className="h-5 w-5 text-purple-400" />
-                    Registro
-                  </Link>
                 </div>
-              )}
+              </div>
             </div>
+
+            {/* Icons & User Menu */}
+            <div className="hidden md:flex items-center space-x-3">
+              {/* Wishlist */}
+              <Link to="/wishlist" className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 to-red-500 rounded opacity-0 group-hover:opacity-30 blur transition-opacity"></div>
+                <div className="relative p-2.5 bg-black border-2 border-gray-800 group-hover:border-pink-500 transition-all duration-200">
+                  <Heart size={20} className="text-gray-500 group-hover:text-pink-500 transition-colors" strokeWidth={2.5} />
+                </div>
+              </Link>
+
+              {/* Cart */}
+              <Link to="/cart" className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded opacity-0 group-hover:opacity-30 blur transition-opacity"></div>
+                <div className="relative p-2.5 bg-black border-2 border-gray-800 group-hover:border-cyan-500 transition-all duration-200">
+                  <ShoppingCart size={20} className="text-gray-500 group-hover:text-cyan-500 transition-colors" strokeWidth={2.5} />
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-black text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.8)] border-2 border-black">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              {/* User Menu */}
+              <div className="relative">
+                {user ? (
+                  <>
+                    <button onClick={toggleDropdown} className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded opacity-0 group-hover:opacity-30 blur transition-opacity"></div>
+                      <div className="relative p-2.5 bg-black border-2 border-gray-800 group-hover:border-purple-500 transition-all duration-200">
+                        <IoPeopleOutline size={20} className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                      </div>
+                    </button>
+
+                    {isDropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
+                        <div className="absolute right-0 mt-3 w-64 bg-black/98 backdrop-blur-xl border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] z-50">
+                          <div className="px-4 py-4 border-b-2 border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-transparent">
+                            <p className="text-sm font-black text-cyan-400 tracking-wider uppercase">{user.name || user.email}</p>
+                            <p className="text-xs text-gray-500 mt-1 font-bold tracking-widest uppercase">{user.role || "Usuario"}</p>
+                          </div>
+
+                          {canAccessDashboard && (
+                            <button onClick={goToDashboard} className="flex items-center w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-150 border-b border-gray-900">
+                              <AiOutlineDashboard className="mr-3 h-5 w-5" />
+                              DASHBOARD
+                            </button>
+                          )}
+
+                          <Link to="/orders" onClick={() => setIsDropdownOpen(false)} className="flex items-center w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all duration-150 border-b border-gray-900">
+                            <AiOutlineShoppingCart className="mr-3 h-5 w-5" />
+                            MIS PEDIDOS
+                          </Link>
+
+                          <button onClick={goToConfiguration} className="flex items-center w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-150 border-b border-gray-900">
+                            <AiOutlineSetting className="mr-3 h-5 w-5" />
+                            CONFIG
+                          </button>
+
+                          <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 text-sm font-bold text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150">
+                            <AiOutlineLogout className="mr-3 h-5 w-5" />
+                            LOGOUT
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Link to="/login" className="relative group overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                      <div className="relative flex items-center gap-2 px-5 py-2.5   border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
+                        <AiOutlineLogin className="h-4 w-4" />
+                        LOGIN
+                      </div>
+                    </Link>
+                          <Link to="/register" className="relative group overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                      <div className="relative flex items-center gap-2 px-5 py-2.5   border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
+                        <AiOutlineLogin className="h-4 w-4" />
+                        Register
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden p-2 bg-black border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 transition-all">
+              {isMobileMenuOpen ? <X size={24} strokeWidth={3} /> : <Menu size={24} strokeWidth={3} />}
+            </button>
           </div>
-        )}
-      </div>
-    </header>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden pb-4 space-y-3 border-t-2 border-cyan-500/30 mt-2 pt-4">
+              {/* Search bar */}
+              <div className="relative">
+                <div className="flex items-center bg-black border-2 border-cyan-500/50 overflow-hidden">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    placeholder="BUSCAR..."
+                    className="px-4 py-2.5 text-cyan-400 text-xs font-bold bg-transparent focus:outline-none w-full placeholder-gray-700 tracking-wider uppercase"
+                  />
+                  <button onClick={doSearch} className="bg-gradient-to-r from-cyan-500 to-purple-500 px-4 py-2.5">
+                    <Search size={18} className="text-black" strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile Icons */}
+              <div className="flex gap-2">
+                <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-black border-2 border-pink-500/50 hover:border-pink-500 text-pink-400 hover:bg-pink-500/10 transition-all">
+                  <Heart size={18} strokeWidth={2.5} />
+                  <span className="text-xs font-black tracking-wider">FAVORITOS</span>
+                </Link>
+                <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500/50 hover:border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 transition-all relative">
+                  <ShoppingCart size={18} strokeWidth={2.5} />
+                  <span className="text-xs font-black tracking-wider">CARRITO</span>
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-500 text-black text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
+
+              {/* Nav Links */}
+              <nav className="flex flex-col space-y-1">
+                <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-cyan-500">
+                  INICIO
+                </Link>
+                
+                <div className="px-4 py-2 text-[10px] font-black text-cyan-500 uppercase tracking-[0.3em] bg-cyan-500/5 border-l-4 border-cyan-500">
+                  /// CATEGORÍAS
+                </div>
+                {categories.map((cat, idx) => (
+                  <Link key={idx} to={cat.link} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-cyan-500/10 transition-all px-4 py-3 border-l-4 border-transparent hover:border-cyan-500">
+                    <span className={`p-1.5 rounded bg-gradient-to-br ${cat.color}`}>{cat.icon}</span>
+                    <span className="font-bold text-xs tracking-wider">{cat.name}</span>
+                  </Link>
+                ))}
+                
+                <Link to="/ofertas" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-orange-400 hover:bg-orange-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-orange-500">
+                  <Flame size={14} className="inline mr-2" />
+                  OFERTAS
+                </Link>
+                <Link to="/novedades" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-purple-500">
+                  <Crown size={14} className="inline mr-2" />
+                  NOVEDADES
+                </Link>
+              </nav>
+
+              {/* Auth Section */}
+              <div className="border-t-2 border-cyan-500/30 pt-3 space-y-2">
+                {user ? (
+                  <>
+                    <div className="px-4 py-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border-l-4 border-cyan-500">
+                      <p className="text-sm font-black text-cyan-400 tracking-wider uppercase">{user.name || user.email}</p>
+                      <p className="text-[10px] text-gray-500 mt-1 font-bold tracking-widest uppercase">{user.role || "Usuario"}</p>
+                    </div>
+
+                    {canAccessDashboard && (
+                      <button onClick={goToDashboard} className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 uppercase tracking-wider border-l-4 border-transparent hover:border-cyan-500">
+                        <AiOutlineDashboard className="mr-3 h-5 w-5" />
+                        DASHBOARD
+                      </button>
+                    )}
+
+                    <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 uppercase tracking-wider border-l-4 border-transparent hover:border-purple-500">
+                      <AiOutlineShoppingCart className="mr-3 h-5 w-5" />
+                      MIS PEDIDOS
+                    </Link>
+
+                    <button onClick={goToConfiguration} className="flex items-center w-full px-4 py-3 text-xs font-bold text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 uppercase tracking-wider border-l-4 border-transparent hover:border-cyan-500">
+                      <AiOutlineSetting className="mr-3 h-5 w-5" />
+                      CONFIG
+                    </button>
+
+                    <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 text-xs font-bold text-red-500 hover:text-red-400 hover:bg-red-500/10 uppercase tracking-wider border-l-4 border-transparent hover:border-red-500">
+                      <AiOutlineLogout className="mr-3 h-5 w-5" />
+                      LOGOUT
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-2 px-4">
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-black text-xs tracking-widest uppercase transition-all">
+                      <AiOutlineLogin className="h-4 w-4" />
+                      LOGIN
+                    </Link>
+                     <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className=" text- flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-black text-xs tracking-widest uppercase transition-all">
+                      <AiOutlineLogin className="h-4 w-4 text" />
+                      SIGN UP
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+    </>
   )
 }

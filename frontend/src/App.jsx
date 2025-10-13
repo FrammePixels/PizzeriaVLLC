@@ -6,7 +6,7 @@ import Footer from './components/Footer.jsx'
 
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
-import Products from './pages/Products.jsx'
+import ItemListContainer from './components/ItemListContainer.jsx'
 import SingleProduct from './pages/SingleProduct.jsx'
 import Contact from './pages/Contact.jsx'
 import Cart from './pages/Cart.jsx'
@@ -20,19 +20,23 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/products' element={<Products />} />
-          <Route path='/products/:id' element={<SingleProduct />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='*' element={<Error404 />} />
-        </Routes>
-        <Footer />
+        <div className="flex flex-col min-h-screen bg-black  ">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path='/' element={<ItemListContainer />} /> {/* Mostrar productos directamente en home */}
+              <Route path='/about' element={<About />} />
+              <Route path='/contact' element={<Contact />} />
+              <Route path='/products' element={<ItemListContainer />} />
+              <Route path='/products/:id' element={<SingleProduct />} />
+              <Route path='/cart' element={<Cart />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/register' element={<Register />} />
+              <Route path='*' element={<Error404 />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </Router>
     </AuthProvider>
   )
