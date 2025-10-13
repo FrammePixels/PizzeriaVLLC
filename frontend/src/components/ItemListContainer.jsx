@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // asegúrate de que la ruta sea correcta
-import ItemList from "./ItemList";
+ import ItemList from "./ItemList";
 
 export default function ItemListContainer({ showHeader = true }) {
     const [products, setProducts] = useState([]);
