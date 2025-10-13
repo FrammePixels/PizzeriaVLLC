@@ -2,10 +2,10 @@
 const App = () => {
   return (
 
-                          <>
-    <Error404 />
+        <>
+            <Error404 />
 
-                          </>
+         </>
 
 
   )
