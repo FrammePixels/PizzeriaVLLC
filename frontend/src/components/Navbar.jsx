@@ -4,7 +4,7 @@ import { Search, Menu, X, ShoppingCart, Heart, Gamepad2, Cpu, Headphones, Monito
 import { AiOutlineDashboard, AiOutlineLogout, AiOutlineSetting, AiOutlineLogin, AiOutlineUserAdd, AiOutlineShoppingCart } from "react-icons/ai"
 import { IoPeopleOutline } from "react-icons/io5"
 import { useAuth } from "../context/AuthContext"
-
+import CartWidgets from "./CardWidgets"  
 export default function GamerNavbar() {
   const [search, setSearch] = useState("")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -12,8 +12,6 @@ export default function GamerNavbar() {
   const [showCategories, setShowCategories] = useState(false)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-
-  const cartItemsCount = 3
 
   const canAccessDashboard =
     user?.role === "Owner" ||
@@ -106,7 +104,7 @@ export default function GamerNavbar() {
             {/* Desktop Navigation - ESTILO CYBERPUNK */}
             <nav className="hidden lg:flex items-center space-x-1">
               <Link to="/" className="px-4 py-2 text-gray-300 hover:text-cyan-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-cyan-500/30 bg-gradient-to-r hover:from-cyan-500/10 hover:to-transparent">
-                <span className="relative z-10">INICIO</span>
+                <span className="relative z-10">Home</span>
                 <div className="absolute inset-0 bg-cyan-500/0 group-hover:bg-cyan-500/5 transition-all"></div>
               </Link>
               
@@ -116,7 +114,7 @@ export default function GamerNavbar() {
                 onMouseLeave={() => setShowCategories(false)}
               >
                 <button className="px-4 py-2 text-gray-300 hover:text-cyan-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase group border-2 border-transparent hover:border-cyan-500/30 bg-gradient-to-r hover:from-cyan-500/10 hover:to-transparent flex items-center gap-2">
-                  <span className="relative z-10">CATEGORÍAS</span>
+                  <span className="relative z-10">Categories</span>
                   <span className="text-[8px] group-hover:rotate-180 transition-transform">▼</span>
                 </button>
                 
@@ -140,12 +138,12 @@ export default function GamerNavbar() {
                 )}
               </div>
 
-              <Link to="/ofertas" className="px-4 py-2 text-gray-300 hover:text-orange-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-orange-500/30 bg-gradient-to-r hover:from-orange-500/10 hover:to-transparent">
+              <Link to="/Offers" className="px-4 py-2 text-gray-300 hover:text-orange-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-orange-500/30 bg-gradient-to-r hover:from-orange-500/10 hover:to-transparent">
                 <Flame size={14} className="inline mr-1 animate-pulse" />
-                <span className="relative z-10">OFERTAS</span>
+                <span className="relative z-10">Offers</span>
               </Link>
               
-              <Link to="/novedades" className="px-4 py-2 text-gray-300 hover:text-purple-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-purple-500/30 bg-gradient-to-r hover:from-purple-500/10 hover:to-transparent">
+              <Link to="/News" className="px-4 py-2 text-gray-300 hover:text-purple-400 transition-all duration-200 font-black text-xs tracking-[0.15em] uppercase relative group border-2 border-transparent hover:border-purple-500/30 bg-gradient-to-r hover:from-purple-500/10 hover:to-transparent">
                 <Crown size={14} className="inline mr-1" />
                 <span className="relative z-10">NEW</span>
               </Link>
@@ -185,18 +183,13 @@ export default function GamerNavbar() {
                 </div>
               </Link>
 
-              {/* Cart */}
-              <Link to="/cart" className="relative group">
+              {/* Cart - Reemplazado por CartWidgets */}
+              <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded opacity-0 group-hover:opacity-30 blur transition-opacity"></div>
-                <div className="relative p-2.5 bg-black border-2 border-gray-800 group-hover:border-cyan-500 transition-all duration-200">
-                  <ShoppingCart size={20} className="text-gray-500 group-hover:text-cyan-500 transition-colors" strokeWidth={2.5} />
-                  {cartItemsCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-black text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.8)] border-2 border-black">
-                      {cartItemsCount}
-                    </span>
-                  )}
+                <div className="relative bg-black border-2 border-gray-800 group-hover:border-cyan-500 transition-all duration-200">
+                  <CartWidgets />
                 </div>
-              </Link>
+              </div>
 
               {/* User Menu */}
               <div className="relative">
@@ -247,16 +240,16 @@ export default function GamerNavbar() {
                   <div className="flex items-center space-x-2">
                     <Link to="/login" className="relative group overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                      <div className="relative flex items-center gap-2 px-5 py-2.5   border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
+                      <div className="relative flex items-center gap-2 px-5 py-2.5 border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
                         <AiOutlineLogin className="h-4 w-4" />
                         LOGIN
                       </div>
                     </Link>
-                          <Link to="/register" className="relative group overflow-hidden">
+                    <Link to="/register" className="relative group overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                      <div className="relative flex items-center gap-2 px-5 py-2.5   border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
-                        <AiOutlineLogin className="h-4 w-4" />
-                        Register
+                      <div className="relative flex items-center gap-2 px-5 py-2.5 border-2 border-cyan-500 group-hover:border-transparent text-cyan-400 group-hover:text-black font-black text-xs tracking-widest uppercase transition-colors">
+                        <AiOutlineUserAdd className="h-4 w-4" />
+                        REGISTER
                       </div>
                     </Link>
                   </div>
@@ -296,25 +289,19 @@ export default function GamerNavbar() {
                   <Heart size={18} strokeWidth={2.5} />
                   <span className="text-xs font-black tracking-wider">FAVORITOS</span>
                 </Link>
-                <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500/50 hover:border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 transition-all relative">
-                  <ShoppingCart size={18} strokeWidth={2.5} />
-                  <span className="text-xs font-black tracking-wider">CARRITO</span>
-                  {cartItemsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-500 text-black text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </Link>
+                <div className="flex-1 flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500/50 hover:border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 transition-all relative">
+                  <CartWidgets />
+                </div>
               </div>
 
               {/* Nav Links */}
               <nav className="flex flex-col space-y-1">
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-cyan-500">
-                  INICIO
+                    Home
                 </Link>
                 
                 <div className="px-4 py-2 text-[10px] font-black text-cyan-500 uppercase tracking-[0.3em] bg-cyan-500/5 border-l-4 border-cyan-500">
-                  /// CATEGORÍAS
+                  /// Categories
                 </div>
                 {categories.map((cat, idx) => (
                   <Link key={idx} to={cat.link} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-cyan-500/10 transition-all px-4 py-3 border-l-4 border-transparent hover:border-cyan-500">
@@ -323,13 +310,13 @@ export default function GamerNavbar() {
                   </Link>
                 ))}
                 
-                <Link to="/ofertas" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-orange-400 hover:bg-orange-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-orange-500">
+                <Link to="/Offers" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-orange-400 hover:bg-orange-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-orange-500">
                   <Flame size={14} className="inline mr-2" />
-                  OFERTAS
+                  Offers
                 </Link>
-                <Link to="/novedades" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-purple-500">
+                <Link to="/News" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-all px-4 py-3 font-black text-xs tracking-widest uppercase border-l-4 border-transparent hover:border-purple-500">
                   <Crown size={14} className="inline mr-2" />
-                  NOVEDADES
+                  News
                 </Link>
               </nav>
 
@@ -370,8 +357,8 @@ export default function GamerNavbar() {
                       <AiOutlineLogin className="h-4 w-4" />
                       LOGIN
                     </Link>
-                     <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className=" text- flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-black text-xs tracking-widest uppercase transition-all">
-                      <AiOutlineLogin className="h-4 w-4 text" />
+                    <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 py-3 bg-black border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-black text-xs tracking-widest uppercase transition-all">
+                      <AiOutlineUserAdd className="h-4 w-4" />
                       SIGN UP
                     </Link>
                   </div>

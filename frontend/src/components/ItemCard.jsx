@@ -21,7 +21,7 @@ const ItemCard = ({ item }) => {
       {/* Status badge */}
       <div className="absolute top-3 right-3 z-10">
         <span className="bg-cyan-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider animate-pulse">
-          {item.status}
+          {item.status || "Disponible"}
         </span>
       </div>
 
@@ -57,10 +57,10 @@ const ItemCard = ({ item }) => {
           {item.category}
         </p>
 
-        {/* Stats */}
+        {/* Stats - CORREGIDO: key única */}
         <div className="grid grid-cols-2 gap-2 mb-4">
-          {item.stats.map((stat, idx) => (
-            <div key={idx} className="flex items-center space-x-2 bg-gray-900/50 border border-cyan-500/30 rounded px-2 py-1">
+          {item.stats?.map((stat, idx) => (
+            <div key={`${item.id}-stat-${idx}`} className="flex items-center space-x-2 bg-gray-900/50 border border-cyan-500/30 rounded px-2 py-1">
               {stat.icon}
               <div className="flex-1">
                 <div className="text-xs text-gray-400 uppercase">{stat.label}</div>
@@ -73,7 +73,9 @@ const ItemCard = ({ item }) => {
         {/* Price and action */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xs text-gray-500 line-through">{item.oldPrice}</div>
+            {item.oldPrice && (
+              <div className="text-xs text-gray-500 line-through">{item.oldPrice}</div>
+            )}
             <div className="text-2xl font-bold text-pink-500">{item.price}</div>
           </div>
           <button 
@@ -142,8 +144,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black p-8">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-12 text-center">
+       <div className="max-w-7xl mx-auto mb-12 text-center">
         <h1 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 uppercase tracking-widest">
           Cyber Market 2077
         </h1>
@@ -152,15 +153,13 @@ export default function App() {
         </p>
       </div>
 
-      {/* Grid de productos */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map(product => (
           <ItemCard key={product.id} item={product} />
         ))}
       </div>
 
-      {/* Footer decorativo */}
-      <div className="max-w-7xl mx-auto mt-12 text-center">
+       <div className="max-w-7xl mx-auto mt-12 text-center">
         <div className="inline-block border-t-2 border-b-2 border-cyan-500 py-2 px-8">
           <p className="text-cyan-500 font-mono text-sm uppercase tracking-wider">
             Sistema de comercio seguro // Encrypted Connection Active

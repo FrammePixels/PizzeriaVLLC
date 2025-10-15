@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 
-axios.defaults.baseURL = "http://localhost:5000"
+axios.defaults.baseURL = "http://localhost:4019"
 
 const AuthContext = createContext()
 
@@ -10,6 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [cartShop, setCartShop] = useState([])
   const [discount, setDiscount] = useState(0)
   const [favorites, setFavorites] = useState([])
+  const [loading, setLoading] = useState(true) // ✅ Añadido
+  const [offers, setOffers] = useState([]) // ✅ Añadido
 
   const login = async (username, password) => {
     try {
@@ -27,6 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null)
+    setOffers([]) // ✅ Limpiar offers al hacer logout
     localStorage.removeItem('token')
     localStorage.removeItem('role')
   }
@@ -50,20 +53,55 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // ✅ useEffect principal corregido
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (!token) return
-    axios.get("/me", { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => {
-        const role = res.data.role || localStorage.getItem("role")
-        setUser({ ...res.data.user, role })
-      })
-      .catch(() => {
-        localStorage.removeItem("token")
-        localStorage.removeItem("role")
-        setUser(null)
-      })
-  }, [])
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // Obtener datos del usuario
+          const userResponse = await fetch('/api/user', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setUser(userData);
+
+            // Obtener offers del usuario
+            const offersResponse = await fetch('/api/user/offers', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (offersResponse.ok) {
+              const offersData = await offersResponse.json();
+              setOffers(offersData);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading data:', error);
+          // No hacer logout automáticamente, solo limpiar datos locales
+          setUser(null);
+          setOffers([]);
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
+
+  // ✅ Función para añadir ofertas
+  const addOffer = (newOffer) => {
+    setOffers(prev => [...prev, newOffer]);
+  };
+
+  // ✅ Función para actualizar ofertas
+  const updateOffer = (updatedOffer) => {
+    setOffers(prev => prev.map(offer => 
+      offer.id === updatedOffer.id ? updatedOffer : offer
+    ));
+  };
 
   // funciones del carrito
   const addToShop = (item) => {
@@ -128,6 +166,11 @@ export const AuthProvider = ({ children }) => {
     setFavorites(favorites.filter(fav => fav.id !== itemId))
   }
 
+  // Función corregida: cambiado 'cart' por 'cartShop'
+  const bgCounts = () => {
+    return cartShop.reduce((total, item) => total + item.quantity, 0);
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -145,7 +188,14 @@ export const AuthProvider = ({ children }) => {
       applyDiscount,
       priceAfterDiscount,
       addToFavorites,
-      removeFromFavorites
+      removeFromFavorites,
+      favorites,
+      bgCounts,
+      // ✅ Añadidas las funciones de offers
+      offers,
+      addOffer,
+      updateOffer,
+      loading
     }}>
       {children}
     </AuthContext.Provider>

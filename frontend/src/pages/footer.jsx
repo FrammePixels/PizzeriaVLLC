@@ -6,10 +6,8 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-black text-white overflow-hidden">
-      {/* Animated background layers */}
-      <div className="absolute inset-0">
-        {/* Moving particles */}
-        <div className="absolute inset-0 opacity-30">
+       <div className="absolute inset-0">
+         <div className="absolute inset-0 opacity-30">
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
@@ -24,21 +22,18 @@ const Footer = () => {
           ))}
         </div>
         
-        {/* Diagonal lines */}
-        <div className="absolute inset-0 opacity-10">
+         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 255, 255, 0.3) 10px, rgba(0, 255, 255, 0.3) 11px)',
           }}></div>
         </div>
       </div>
 
-      {/* Top glowing border */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-lg shadow-cyan-400/50"></div>
+       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-lg shadow-cyan-400/50"></div>
 
       <div className="relative max-w-7xl mx-auto px-6 py-16">
         
-        {/* Top section with logo and tagline */}
-        <div className="flex flex-col items-center text-center mb-16">
+         <div className="flex flex-col items-center text-center mb-16">
           <div 
             className="relative mb-4"
             onMouseEnter={() => setGlitchActive(true)}
@@ -71,11 +66,9 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Main grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           
-          {/* Column 1 */}
-          <div>
+           <div>
             <h3 className="text-cyan-400 font-bold mb-6 uppercase text-sm tracking-widest relative inline-block">
               <span className="relative z-10">EXPLORE</span>
               <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-cyan-400 to-transparent"></div>
@@ -95,8 +88,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 2 */}
-          <div>
+           <div>
             <h3 className="text-purple-400 font-bold mb-6 uppercase text-sm tracking-widest relative inline-block">
               <span className="relative z-10">RESOURCES</span>
               <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-purple-400 to-transparent"></div>
@@ -116,8 +108,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3 */}
-          <div>
+           <div>
             <h3 className="text-pink-400 font-bold mb-6 uppercase text-sm tracking-widest relative inline-block">
               <span className="relative z-10">COMPANY</span>
               <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-pink-400 to-transparent"></div>
@@ -137,8 +128,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 4 - Social */}
-          <div>
+           <div>
             <h3 className="text-cyan-400 font-bold mb-6 uppercase text-sm tracking-widest relative inline-block">
               <span className="relative z-10">CONNECT</span>
               <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-cyan-400 to-transparent"></div>
@@ -166,8 +156,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="relative">
+         <div className="relative">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent mb-8"></div>
           
           <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -195,12 +184,10 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-32 h-32 border-l-2 border-t-2 border-cyan-400 opacity-30"></div>
+       <div className="absolute top-0 left-0 w-32 h-32 border-l-2 border-t-2 border-cyan-400 opacity-30"></div>
       <div className="absolute bottom-0 right-0 w-32 h-32 border-r-2 border-b-2 border-purple-600 opacity-30"></div>
       
-      {/* Glow effects */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-3xl pointer-events-none"></div>
+       <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/10 blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/10 blur-3xl pointer-events-none"></div>
     </footer>
   );

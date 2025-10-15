@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, User, Zap, Shield, Check } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../firebase'; // ajusta la ruta si hace falta
-
+ 
 export default function CyberpunkRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -54,15 +53,13 @@ export default function CyberpunkRegister() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background animated elements */}
-      <div className="absolute inset-0 overflow-hidden">
+       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div 
+       <div 
         className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
@@ -73,8 +70,7 @@ export default function CyberpunkRegister() {
         }}
       />
 
-      {/* Register container */}
-      <div className="relative z-10 w-full max-w-md">
+       <div className="relative z-10 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-block mb-4 p-4 border-2 border-cyan-500 rounded-lg bg-black/50 backdrop-blur-sm">
@@ -93,22 +89,19 @@ export default function CyberpunkRegister() {
           </div>
         </div>
 
-        {/* Register form */}
-        <div 
+         <div 
           className="relative bg-black border-2 border-cyan-500 rounded-lg p-8 backdrop-blur-sm"
           style={{
             boxShadow: '0 0 30px rgba(6, 182, 212, 0.4), inset 0 0 20px rgba(6, 182, 212, 0.1)'
           }}
         >
-          {/* Corner decorations */}
-          <div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-pink-500" />
+           <div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-pink-500" />
           <div className="absolute top-0 right-0 w-12 h-12 border-r-2 border-t-2 border-pink-500" />
           <div className="absolute bottom-0 left-0 w-12 h-12 border-l-2 border-b-2 border-cyan-500" />
           <div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-cyan-500" />
 
           <div className="space-y-5">
-            {/* Username field */}
-            <div className="relative">
+             <div className="relative">
               <label className="block text-cyan-400 text-sm font-mono mb-2 uppercase tracking-wider">
                 Username
               </label>
@@ -124,8 +117,7 @@ export default function CyberpunkRegister() {
               </div>
             </div>
 
-            {/* Email field */}
-            <div className="relative">
+             <div className="relative">
               <label className="block text-cyan-400 text-sm font-mono mb-2 uppercase tracking-wider">
                 Email ID
               </label>
@@ -216,8 +208,7 @@ export default function CyberpunkRegister() {
               )}
             </div>
 
-            {/* Terms & Conditions */}
-            <div className="flex items-start space-x-3 p-4 bg-gray-900/30 border border-cyan-500/30 rounded">
+             <div className="flex items-start space-x-3 p-4 bg-gray-900/30 border border-cyan-500/30 rounded">
               <input 
                 type="checkbox" 
                 checked={acceptTerms}
@@ -236,8 +227,7 @@ export default function CyberpunkRegister() {
               </label>
             </div>
 
-            {/* Submit button */}
-            <button
+             <button
               onClick={handleSubmit}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold py-3 rounded uppercase tracking-widest transition-all duration-300 hover:shadow-2xl hover:shadow-pink-500/50 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
@@ -253,8 +243,7 @@ export default function CyberpunkRegister() {
               <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
 
-            {/* Divider */}
-            <div className="relative">
+             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t-2 border-cyan-500/30" />
               </div>
@@ -265,8 +254,7 @@ export default function CyberpunkRegister() {
               </div>
             </div>
 
-            {/* Social register */}
-            <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
                 className="flex items-center justify-center space-x-2 bg-gray-900/50 border-2 border-cyan-500/50 rounded py-3 hover:border-pink-500 hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-300 group"
@@ -288,8 +276,7 @@ export default function CyberpunkRegister() {
             </div>
           </div>
 
-          {/* Scanlines effect */}
-          <div 
+           <div 
             className="absolute inset-0 pointer-events-none rounded-lg"
             style={{
               backgroundImage: 'repeating-linear-gradient(0deg, rgba(6, 182, 212, 0.03) 0px, rgba(6, 182, 212, 0.03) 1px, transparent 1px, transparent 2px)',
@@ -297,8 +284,7 @@ export default function CyberpunkRegister() {
           />
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
+         <div className="text-center mt-8">
           <p className="text-gray-500 font-mono text-sm">
             Already registered?{' '}
             <button className="text-cyan-400 hover:text-pink-400 transition-colors">

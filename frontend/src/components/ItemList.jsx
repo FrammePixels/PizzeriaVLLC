@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Zap, Shield, Cpu, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ItemCard = ({ item }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleAcquire = () => {
+    if (item.ProductoId) {
+      navigate(`/productos/${item.ProductoId}`);
+    } else {
+      console.error('ProductoId no válido:', item.ProductoId);
+      alert('Producto no disponible temporalmente');
+    }
+  };
 
   return (
     <div
@@ -24,8 +35,8 @@ const ItemCard = ({ item }) => {
 
       <div className="relative h-48 bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">
         <img
-          src={item.image}
-          alt={item.TITLE}
+          src={item.Imagen || item.image}
+          alt={item.NombreProducto || 'Producto'}
           className="w-full h-full object-cover transition-all duration-500"
           style={{
             filter: isHovered
@@ -44,11 +55,11 @@ const ItemCard = ({ item }) => {
 
       <div className="p-4 relative">
         <h3 className="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 uppercase tracking-wide">
-          {item.name}
+          {item.NombreProducto || 'Producto'}
         </h3>
 
         <p className="text-cyan-300 text-sm mb-3 font-mono uppercase tracking-wider">
-          {item.category}
+          {item.Categoria || item.category || 'Categoría'}
         </p>
 
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -68,15 +79,14 @@ const ItemCard = ({ item }) => {
 
         <div className="flex items-center justify-between">
           <div>
-            {item.oldPrice && (
-              <div className="text-xs text-gray-500 line-through">
-                {item.oldPrice}
-                {item.Title}
-              </div>
-            )}
-            <div className="text-2xl font-bold text-pink-500">{item.price}</div>
+            <div className="text-2xl font-bold text-pink-500">
+              ${item.Precio || item.price || '0.00'}
+            </div>
           </div>
-          <button className="bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold px-6 py-2 rounded uppercase tracking-wide transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/50 hover:scale-110">
+          <button 
+            onClick={handleAcquire}
+            className="bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold px-6 py-2 rounded uppercase tracking-wide transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/50 hover:scale-110"
+          >
             Adquirir
           </button>
         </div>
@@ -88,43 +98,65 @@ const ItemCard = ({ item }) => {
   );
 };
 
-export default function App() {
+export default function ItemList() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Aquí reemplazás Firebase por tu backend Node.js + MySQL
-        const res = await fetch("http://localhost:5000/api/products");
+        const res = await fetch("http://localhost:4019/api/productos");
         if (!res.ok) throw new Error("Error al obtener productos");
         const data = await res.json();
 
-        // Mapear stats con íconos
-        const itemsWithIcons = data.map((item) => ({
-          ...item,
-          stats: item.stats?.map((stat) => ({
-            ...stat,
-            icon:
-              stat.label === "CPU" ? (
-                <Cpu className="w-4 h-4 text-cyan-400" />
-              ) : stat.label === "Shield" ? (
-                <Shield className="w-4 h-4 text-pink-400" />
-              ) : stat.label === "Power" ? (
-                <Zap className="w-4 h-4 text-yellow-400" />
-              ) : (
-                <Eye className="w-4 h-4 text-purple-400" />
-              ),
-          })),
-        }));
+        console.log("Datos del backend:", data);
 
-        setProducts(itemsWithIcons);
+        if (Array.isArray(data)) {
+          const formattedProducts = data.map((item) => ({
+            ...item,
+            id: item.ProductoId,
+            ProductoId: item.ProductoId,
+            name: item.NombreProducto,
+            price: item.Precio,
+            image: item.Imagen,
+            description: item.Descripcion,
+            stats: [
+              {
+                label: "Stock",
+                value: item.Stock || "Disponible",
+                icon: <Zap className="w-4 h-4 text-yellow-400" />
+              },
+              {
+                label: "Categoría", 
+                value: item.Categoria || "General",
+                icon: <Shield className="w-4 h-4 text-pink-400" />
+              }
+            ]
+          }));
+
+          setProducts(formattedProducts);
+        } else {
+          console.warn('Expected array but got:', data);
+          setProducts([]);
+        }
       } catch (err) {
         console.error(err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-cyan-400 font-mono">CARGANDO PRODUCTOS...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black p-8">
@@ -139,9 +171,15 @@ export default function App() {
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
-          <ItemCard key={product.id} item={product} />
+          <ItemCard key={product.ProductoId} item={product} />
         ))}
       </div>
+
+      {products.length === 0 && !loading && (
+        <div className="text-center text-cyan-400 font-mono mt-12">
+          NO HAY PRODUCTOS DISPONIBLES
+        </div>
+      )}
     </div>
   );
 }

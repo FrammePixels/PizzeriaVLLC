@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { AlertTriangle, Home, Search, RefreshCw, Terminal, Wifi } from 'lucide-react'
-import { Link } from 'react-router-dom' // ✅ Import necesario para el link al inicio
-
+import { Link } from 'react-router-dom'  
 export default function Cyberpunk404() {
   const [glitchText, setGlitchText] = useState('404')
   const [scanLine, setScanLine] = useState(0)

@@ -1,25 +1,44 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
- import ItemList from "./ItemList";
+    import { useEffect, useState } from "react";
+    import ItemList from "./ItemList";
 
-export default function ItemListContainer({ showHeader = true }) {
+    export default function ItemListContainer({ showHeader = true }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getProducts = async () => {
-            try {
-                const querySnapshot = await getDocs(collection(db, "products"));
-                const items = querySnapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setProducts(items);
-            } catch (error) {
-                console.error("Error al obtener productos:", error);
-            } finally {
-                setLoading(false);
-            }
+        try {
+            const res = await fetch("http://localhost:4019/api/productos");  
+            if (!res.ok) throw new Error("Error al obtener productos");
+            const data = await res.json();
+
+            const itemsWithIcons = data.map((item) => ({
+            ...item,
+            stats: item.stats?.map((stat) => {
+                let icon;
+                switch (stat.label) {
+                case "CPU":
+                    icon = <Cpu className="w-4 h-4 text-cyan-400" />;
+                    break;
+                case "Shield":
+                    icon = <Shield className="w-4 h-4 text-pink-400" />;
+                    break;
+                case "Power":
+                    icon = <Zap className="w-4 h-4 text-yellow-400" />;
+                    break;
+                default:
+                    icon = <Eye className="w-4 h-4 text-purple-400" />;
+                }
+                return { ...stat, icon };
+            }),
+            }));
+
+            setProducts(itemsWithIcons);
+        } catch (error) {
+            console.error("Error al obtener productos:", error);
+        } finally {
+            setLoading(false);
+        }
         };
 
         getProducts();
@@ -27,25 +46,18 @@ export default function ItemListContainer({ showHeader = true }) {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="text-cyan-400 text-xl font-mono animate-pulse">
-                    LOADING_CYBER_DATA...
-                </div>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="text-cyan-400 text-xl font-mono animate-pulse">
+            LOADING_CYBER_DATA...
             </div>
+        </div>
         );
     }
 
     return (
         <div>
-            {showHeader && (
-                <div className="mb-8 text-center">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-600 bg-clip-text text-transparent mb-2 p-5">
-                        CYBER_ITEM_DATABASE
-                    </h1>
-                    <div className="h-1 bg-gradient-to-r from-cyan-500 to-purple-500 w-32 mx-auto"></div>
-                </div>
-            )}
-            <ItemList items={products} />
+ 
+        <ItemList items={products} />
         </div>
     );
-}
+    }
