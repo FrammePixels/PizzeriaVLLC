@@ -10,8 +10,7 @@ const ItemCard = ({ item }) => {
     if (item.ProductoId) {
       navigate(`/productos/${item.ProductoId}`);
     } else {
-      console.error('ProductoId no válido:', item.ProductoId);
-      alert('Producto no disponible temporalmente');
+        alert('Producto no disponible temporalmente');
     }
   };
 
@@ -57,11 +56,7 @@ const ItemCard = ({ item }) => {
         <h3 className="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 uppercase tracking-wide">
           {item.NombreProducto || 'Producto'}
         </h3>
-
-        <p className="text-cyan-300 text-sm mb-3 font-mono uppercase tracking-wider">
-          {item.Categoria || item.category || 'Categoría'}
-        </p>
-
+ 
         <div className="grid grid-cols-2 gap-2 mb-4">
           {item.stats?.map((stat, idx) => (
             <div
