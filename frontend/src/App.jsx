@@ -12,7 +12,7 @@ import Contact from './pages/Contact.jsx'
 import Cart from './pages/Cart.jsx'
 import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
-import Checkout from './components/Checkout.jsx'
+import Checkout from './components/Cheackout.jsx'
 
 import Error404 from './pages/Error/Error404.jsx'
 
