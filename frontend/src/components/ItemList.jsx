@@ -160,14 +160,7 @@ export default function ItemList() {
 
   return (
     <div className="min-h-screen bg-black p-8">
-      <div className="max-w-7xl mx-auto mb-12 text-center">
-        <h1 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 uppercase tracking-widest">
-          Cyber Market 2077
-        </h1>
-        <p className="text-cyan-300 font-mono text-lg">
-          // Equipamiento de última generación para operadores cibernéticos
-        </p>
-      </div>
+ 
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
@@ -177,7 +170,7 @@ export default function ItemList() {
 
       {products.length === 0 && !loading && (
         <div className="text-center text-cyan-400 font-mono mt-12">
-          NO HAY PRODUCTOS DISPONIBLES
+              NO PRODUCTS AVAILABLE
         </div>
       )}
     </div>
