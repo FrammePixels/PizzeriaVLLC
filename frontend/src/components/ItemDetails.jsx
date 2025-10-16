@@ -15,7 +15,7 @@ const ItemDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:4019/api/products/${id}`, {
+        const res = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/${id}`, {
           headers: { Authorization: token ? `Bearer ${token}` : '' },
         });
         if (!res.ok) throw new Error('Error al obtener el producto');
