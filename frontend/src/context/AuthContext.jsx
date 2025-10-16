@@ -10,13 +10,13 @@ export const AuthProvider = ({ children }) => {
   const [cartShop, setCartShop] = useState([])
   const [discount, setDiscount] = useState(0)
   const [favorites, setFavorites] = useState([])
-  const [loading, setLoading] = useState(true) // ✅ Añadido
-  const [offers, setOffers] = useState([]) // ✅ Añadido
+  const [loading, setLoading] = useState(true)
+  const [offers, setOffers] = useState([])
 
+  // 🧩 Login / Logout
   const login = async (username, password) => {
     try {
-      const payload = { username, password }
-      const { data } = await axios.post('/auth/login', payload)
+      const { data } = await axios.post('/auth/login', { username, password })
       localStorage.setItem('token', data.token)
       localStorage.setItem('role', data.role)
       setUser({ username, role: data.role })
@@ -29,146 +29,103 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null)
-    setOffers([]) // ✅ Limpiar offers al hacer logout
+    setOffers([])
     localStorage.removeItem('token')
     localStorage.removeItem('role')
+    localStorage.removeItem('cartShop')
   }
 
-  const createAnime = async ({ titulo, descripcion, imagen }) => {
-    try {
-      const formData = new FormData()
-      formData.append("Titulo", titulo)
-      formData.append("Descripcion", descripcion)
-      if (imagen) formData.append("Imagen", imagen)
-      const token = localStorage.getItem("token")
-      const { data } = await axios.post("/animes", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
-        }
-      })
-      return data
-    } catch (err) {
-      throw err
-    }
-  }
-
-  // ✅ useEffect principal corregido
+  // 🧩 Inicializar sesión y cargar datos
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
       if (token) {
         try {
-          // Obtener datos del usuario
           const userResponse = await fetch('/api/user', {
             headers: { 'Authorization': `Bearer ${token}` }
-          });
-          
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            setUser(userData);
+          })
 
-            // Obtener offers del usuario
+          if (userResponse.ok) {
+            const userData = await userResponse.json()
+            setUser(userData)
+
             const offersResponse = await fetch('/api/user/offers', {
               headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
+            })
+
             if (offersResponse.ok) {
-              const offersData = await offersResponse.json();
-              setOffers(offersData);
+              const offersData = await offersResponse.json()
+              setOffers(offersData)
             }
           }
         } catch (error) {
-          console.error('Error loading data:', error);
-          // No hacer logout automáticamente, solo limpiar datos locales
-          setUser(null);
-          setOffers([]);
+          console.error('Error loading data:', error)
+          setUser(null)
+          setOffers([])
         }
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
+    initializeAuth()
+  }, [])
 
-    initializeAuth();
-  }, []);
+  // 🛒 Persistencia del carrito
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cartShop")
+    if (storedCart) setCartShop(JSON.parse(storedCart))
+  }, [])
 
-  // ✅ Función para añadir ofertas
-  const addOffer = (newOffer) => {
-    setOffers(prev => [...prev, newOffer]);
-  };
+  useEffect(() => {
+    localStorage.setItem("cartShop", JSON.stringify(cartShop))
+  }, [cartShop])
 
-  // ✅ Función para actualizar ofertas
-  const updateOffer = (updatedOffer) => {
-    setOffers(prev => prev.map(offer => 
-      offer.id === updatedOffer.id ? updatedOffer : offer
-    ));
-  };
-
-  // funciones del carrito
+  // 🛒 Carrito de compras (funciones de tu CartProvider)
   const addToShop = (item) => {
-    const iproductitem = cartShop.findIndex((prod) => prod.id === item.id)
-    if (iproductitem !== -1) {
-      const newCart = [...cartShop]
-      newCart[iproductitem].quantity += item.quantity || 1
-      setCartShop(newCart)
+    if (!item.id) {
+      console.error('❌ El producto debe tener un ID')
+      return
+    }
+
+    const indexProduct = cartShop.findIndex(prod => prod.id === item.id)
+    if (indexProduct === -1) {
+      setCartShop([...cartShop, item])
     } else {
-      setCartShop([...cartShop, { ...item, quantity: item.quantity || 1 }])
+      const inCart = cartShop[indexProduct].quantity
+      cartShop[indexProduct].quantity = inCart + item.quantity
+      setCartShop([...cartShop])
     }
   }
 
-  const PriceFinal = () => {
-    return cartShop.reduce((total, item) => total + item.price * item.quantity, 0)
+  const removeProduct = (id) => {
+    setCartShop(cartShop.filter(item => item.id !== id))
   }
 
-  const TotalProducts = () => {
-    const totalQuantity = cartShop.reduce((total, item) => total + item.quantity, 0)
-    const formattedQuantity = totalQuantity < 10 ? `0${totalQuantity}` : totalQuantity
-    return formattedQuantity
-  }
-
-  const CountShop = () => {
-    return cartShop.reduce((acumular, ProductoObjeto) => (acumular += ProductoObjeto.quantity), 0)
-  }
-
-  const removeItem = (id) => {
-    const newCart = cartShop.filter((item) => item.id !== id)
-    setCartShop(newCart)
-  }
-
-  const deleteItemCart = () => {
+  const deleteCart = () => {
     setCartShop([])
   }
 
-  const syncCart = async () => {
-    const token = localStorage.getItem("token")
-    if (!token) return
-    await axios.post("/cart/sync", { cart: cartShop }, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+  const PriceFinal = () =>
+    cartShop.reduce((acum, prod) => acum + prod.costo * prod.quantity, 0)
+
+  const TotalsProducts = () => {
+    const totalQuantity = cartShop.reduce((acc, prod) => acc + prod.quantity, 0)
+    return totalQuantity.toLocaleString('es-ES', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
   }
 
-  // funciones de descuento
-  const applyDiscount = (percent) => {
-    setDiscount(percent)
-  }
+  const bgCounts = () =>
+    cartShop.reduce((acum, prod) => acum + prod.quantity, 0)
 
-  const priceAfterDiscount = () => {
-    return PriceFinal() * (1 - discount / 100)
-  }
+  // 💰 Descuento
+  const priceAfterDiscount = () => PriceFinal() * (1 - discount / 100)
+  const applyDiscount = (percent) => setDiscount(percent)
 
-  // funciones de favoritos
+  // ⭐ Favoritos
   const addToFavorites = (item) => {
-    if (!favorites.find(fav => fav.id === item.id)) {
-      setFavorites([...favorites, item])
-    }
+    if (!favorites.find(fav => fav.id === item.id)) setFavorites([...favorites, item])
   }
 
   const removeFromFavorites = (itemId) => {
     setFavorites(favorites.filter(fav => fav.id !== itemId))
-  }
-
-  // Función corregida: cambiado 'cart' por 'cartShop'
-  const bgCounts = () => {
-    return cartShop.reduce((total, item) => total + item.quantity, 0);
   }
 
   return (
@@ -176,25 +133,22 @@ export const AuthProvider = ({ children }) => {
       user,
       login,
       logout,
-      createAnime,
-      addToShop,
       cartShop,
-      TotalProducts,
+      addToShop,
+      removeProduct,
+      deleteCart,
       PriceFinal,
-      CountShop,
-      removeItem,
-      deleteItemCart,
-      syncCart,
+      TotalsProducts,
+      bgCounts,
       applyDiscount,
       priceAfterDiscount,
       addToFavorites,
       removeFromFavorites,
       favorites,
-      bgCounts,
-      // ✅ Añadidas las funciones de offers
       offers,
-      addOffer,
-      updateOffer,
+      addOffer: (newOffer) => setOffers(prev => [...prev, newOffer]),
+      updateOffer: (updatedOffer) => setOffers(prev => prev.map(o => o.id === updatedOffer.id ? updatedOffer : o)),
+      discount,
       loading
     }}>
       {children}
@@ -203,5 +157,4 @@ export const AuthProvider = ({ children }) => {
 }
 
 export const useAuth = () => useContext(AuthContext)
-
 export default AuthContext

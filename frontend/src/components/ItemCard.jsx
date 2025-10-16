@@ -81,7 +81,7 @@ const ItemCard = ({ item }) => {
           <button 
             className="bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold px-6 py-2 rounded uppercase tracking-wide transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/50 hover:scale-110"
           >
-            Adquirir
+            Acquire
           </button>
         </div>
 
@@ -162,8 +162,7 @@ export default function App() {
        <div className="max-w-7xl mx-auto mt-12 text-center">
         <div className="inline-block border-t-2 border-b-2 border-cyan-500 py-2 px-8">
           <p className="text-cyan-500 font-mono text-sm uppercase tracking-wider">
-            Sistema de comercio seguro // Encrypted Connection Active
-          </p>
+           </p>
         </div>
       </div>
     </div>

@@ -1,199 +1,282 @@
-console.log("🚀 Iniciando server.js ...");
+console.log("🚀 Iniciando NexusGammer Backend (Modo Híbrido)...");
 
 require("dotenv").config();
 const express = require("express");
-const mysql = require("mysql2");
-const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const jwt = require("jsonwebtoken");
 const http = require("http");
-const { Server } = require("socket.io");
-const rateLimit = require("express-rate-limit");
-const helmet = require("helmet");
 
 const app = express();
 const server = http.createServer(app);
 
-app.set("trust proxy", 1);
+const PORT = process.env.PORT || 4019;
 
-// ---------- ENV & SECRET ----------
-const SECRET_KEY = process.env.JWT_SECRET || "clave_local_super_segura";
-console.log("🔐 JWT Secret cargado");
+console.log("🔧 Configurando servidor...");
 
+// Crear directorio uploads
 const uploadsPath = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
-console.log("📁 Carpeta uploads lista:", uploadsPath);
-
-// ---------- Seguridad ----------
-app.use(helmet());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-    exposedHeaders: ["Cross-Origin-Resource-Policy"],
-  })
-);
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
-
-// ---------- Servir frontend (si existe) ----------
-const frontendPath = path.join(__dirname, "dist");
-if (fs.existsSync(frontendPath)) {
-  app.use(express.static(frontendPath));
-  app.get("*", (req, res) =>
-    res.sendFile(path.join(frontendPath, "index.html"))
-  );
-  console.log("🎯 Frontend servido desde:", frontendPath);
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+  console.log("📁 Carpeta uploads creada");
 }
 
-// ---------- Servir imágenes ----------
-app.use(
-  "/uploads",
-  (req, res, next) => {
-    res.set("Cross-Origin-Resource-Policy", "cross-origin");
-    next();
-  },
-  express.static(uploadsPath)
-);
+// ---------- Middlewares ----------
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 
-// ---------- MySQL ----------
-let db;
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Servir archivos estáticos
+app.use(express.static("public"));
+app.use("/uploads", express.static(uploadsPath));
+
+// ---------- Datos en memoria (como respaldo) ----------
+let productos = [];
+
+// Intentar cargar datos del server.json
 try {
-  db = mysql.createPool({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "",
-    database: process.env.DB_NAME || "nexusgammer",
-    waitForConnections: true,
-    connectionLimit: 10,
-    acquireTimeout: 60000,
-    connectTimeout: 60000,
-    reconnect: true,
-  });
-
-  db.getConnection((err, connection) => {
-    if (err) console.error("⚠️ Error al conectar a MySQL:", err.message);
-    else {
-      console.log("✅ Conectado a la base de datos local (MySQL)");
-      connection.release();
+  const jsonPath = path.join(__dirname, 'server.json');
+  if (fs.existsSync(jsonPath)) {
+    const jsonData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    
+    if (Array.isArray(jsonData)) {
+      productos = jsonData;
+    } else if (jsonData.productos) {
+      productos = jsonData.productos;
+    } else if (jsonData.data) {
+      productos = jsonData.data;
     }
-  });
-
-  db.on("error", (err) => {
-    console.error("🔄 Error en pool de MySQL:", err.message);
-  });
-} catch (err) {
-  console.error("❌ Error crítico MySQL:", err.message);
+    
+    console.log(`📊 ${productos.length} productos cargados desde server.json`);
+  } else {
+    console.log("📝 Usando datos de ejemplo en memoria");
+    productos = [
+      {
+        ProductoId: "PROD001",
+        nombre: "Producto Ejemplo 1",
+        descripcion: "Descripción del producto 1",
+        precio: 99.99,
+        precio_original: 129.99,
+        stock: 10,
+        categoria: "Electrónicos",
+        imagen: "/uploads/ejemplo1.jpg",
+        en_oferta: true
+      },
+      {
+        ProductoId: "PROD002",
+        nombre: "Producto Ejemplo 2", 
+        descripcion: "Descripción del producto 2",
+        precio: 49.99,
+        precio_original: 49.99,
+        stock: 25,
+        categoria: "Hogar",
+        imagen: "/uploads/ejemplo2.jpg",
+        en_oferta: false
+      }
+    ];
+  }
+} catch (error) {
+  console.error("❌ Error cargando datos locales:", error.message);
 }
 
-// Función para queries con promesas
-const dbQuery = (...args) =>
-  new Promise((resolve, reject) =>
-    db.query(...args, (err, results) => (err ? reject(err) : resolve(results)))
-  );
+// ---------- Intentar conectar a MongoDB (en segundo plano) ----------
+let mongoConnected = false;
+let ProductModel = null;
 
-// ---------- Rate Limit ----------
-app.use(rateLimit({ windowMs: 60_000, max: 100 }));
-const loginLimiter = rateLimit({ windowMs: 15 * 60_000, max: 10 });
+const connectMongoDB = async () => {
+  const MONGODB_URI = "mongodb://nexxusgammer_db_user:YwR6ix7ePtGFBRGt@atlas-sql-67a2d944f643a65cc4821fff-vzn0l.a.query.mongodb.net:27017/sample_mflix?retryWrites=true&w=majority&ssl=true";
+  
+  try {
+    console.log("🔄 Intentando conectar a MongoDB en segundo plano...");
+    
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 30000
+    });
+    
+    mongoConnected = true;
+    console.log("✅ MongoDB conectado exitosamente!");
+    
+    // Configurar modelo de MongoDB
+    const productSchema = new mongoose.Schema({
+      ProductoId: String,
+      nombre: String,
+      descripcion: String,
+      precio: Number,
+      precio_original: Number,
+      stock: Number,
+      categoria: String,
+      imagen: String,
+      en_oferta: Boolean
+    });
+    
+    ProductModel = mongoose.model("Product", productSchema, 'productos');
+    
+    // Sincronizar datos locales con MongoDB si es necesario
+    try {
+      const count = await ProductModel.countDocuments();
+      console.log(`📊 MongoDB tiene ${count} productos`);
+    } catch (e) {
+      console.log("📝 MongoDB lista para usar");
+    }
+    
+  } catch (error) {
+    console.log("⚠️  MongoDB no disponible:", error.message);
+    console.log("💡 Usando datos locales. La app funciona normalmente.");
+  }
+};
 
-// ---------- Multer ----------
+// Iniciar conexión en segundo plano
+connectMongoDB();
+
+// ---------- Routes Inteligentes (usan MongoDB si está disponible, si no datos locales) ----------
+
+// Health check mejorado
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "healthy",
+    message: "🚀 NexusGammer Backend funcionando",
+    database: mongoConnected ? "mongodb" : "local",
+    products_count: productos.length,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Obtener todos los productos
+app.get('/api/products', async (req, res) => {
+  try {
+    if (mongoConnected && ProductModel) {
+      // Usar MongoDB si está disponible
+      const products = await ProductModel.find().sort({ fecha_creacion: -1 });
+      console.log(`📦 MongoDB: Enviando ${products.length} productos`);
+      res.json(products);
+    } else {
+      // Usar datos locales
+      console.log(`📦 Local: Enviando ${productos.length} productos`);
+      res.json(productos);
+    }
+  } catch (error) {
+    console.error('❌ Error al obtener productos:', error);
+    // Fallback a datos locales
+    res.json(productos);
+  }
+});
+
+// Obtener producto por ID
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    if (mongoConnected && ProductModel) {
+      const product = await ProductModel.findOne({ ProductoId: req.params.id });
+      if (!product) return res.status(404).json({ message: 'Producto no encontrado' });
+      res.json(product);
+    } else {
+      const product = productos.find(p => p.ProductoId === req.params.id);
+      if (!product) return res.status(404).json({ message: 'Producto no encontrado' });
+      res.json(product);
+    }
+  } catch (error) {
+    console.error('❌ Error al obtener producto:', error);
+    res.status(500).json({ message: 'Error al obtener el producto' });
+  }
+});
+
+// Obtener ofertas
+app.get('/api/productos/ofertas', async (req, res) => {
+  try {
+    if (mongoConnected && ProductModel) {
+      const ofertas = await ProductModel.find({ en_oferta: true });
+      console.log(`🎯 MongoDB: ${ofertas.length} ofertas`);
+      res.json(ofertas);
+    } else {
+      const ofertas = productos.filter(p => p.en_oferta);
+      console.log(`🎯 Local: ${ofertas.length} ofertas`);
+      res.json(ofertas);
+    }
+  } catch (error) {
+    console.error('❌ Error obteniendo ofertas:', error);
+    const ofertas = productos.filter(p => p.en_oferta);
+    res.json(ofertas);
+  }
+});
+
+// Endpoint para verificar estado de MongoDB
+app.get('/api/mongo-status', (req, res) => {
+  res.json({
+    mongodb: mongoConnected ? "connected" : "disconnected",
+    local_data: productos.length + " productos",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ---------- Multer para uploads ----------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsPath),
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
+    cb(null, `img-${Date.now()}${ext}`);
   },
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowed = ["image/webp", "image/png", "image/jpeg"];
-    if (!allowed.includes(file.mimetype)) return cb(new Error("Solo JPEG, PNG o WEBP"));
-    cb(null, true);
-  },
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-// ---------- JWT ----------
-const generarToken = (id, rol) => jwt.sign({ id, rol }, SECRET_KEY, { expiresIn: "7d" });
-const verificarToken = async (req, res, next) => {
-  const header = req.headers["authorization"];
-  if (!header) return res.status(403).json({ error: "Token requerido" });
-  const [bearer, token] = header.split(" ");
-  if (bearer !== "Bearer" || !token) return res.status(403).json({ error: "Formato de token inválido" });
+// Upload de imágenes
+app.post('/api/upload', upload.single('imagen'), (req, res) => {
   try {
-    req.user = jwt.verify(token, SECRET_KEY);
-    next();
-  } catch {
-    return res.status(403).json({ error: "Token inválido o expirado" });
-  }
-};
-// Endpoint para traer todos los productos
-app.get('/api/productos', async (req, res) => {
-  try {
-    const [rows] = await db.promise().query('SELECT * FROM productos');
-    res.json(rows);
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se subió ningún archivo' });
+    }
+    
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ 
+      message: 'Imagen subida correctamente', 
+      url: imageUrl,
+      filename: req.file.filename
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener los productos' });
+    console.error('❌ Error subiendo imagen:', error);
+    res.status(500).json({ error: 'Error al subir la imagen' });
   }
 });
-
-app.get('/api/productos/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [rows] = await db.promise().query('SELECT * FROM productos WHERE ProductoId = ?', [id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Producto no encontrado' });
-    res.json(rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener el producto' });
-  }
-});
-
-
 
 // ---------- Socket.IO ----------
-let io;
-try {
-  io = new Server(server, { cors: { origin: "*" } });
-  io.on("connection", (socket) => {
-    console.log("✅ Socket conectado:", socket.id);
-    socket.on("disconnect", () => console.log("❌ Socket desconectado:", socket.id));
-  });
-} catch (err) {
-  console.error("❌ Error Socket.IO:", err.message);
-}
-// ---- OFERTAS EN TIEMPO REAL ----
- app.get('/api/productos/ofertas', async (req, res) => {
-  try {
-    const [rows] = await connection.execute(
-      "SELECT * FROM en_oferta WHERE en_ofertas = '1'"
-    );
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching offers:', error);
-    res.status(500).json({ error: 'Internal server error' });
+const { Server } = require("socket.io");
+const io = new Server(server, { 
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
   }
 });
 
-// ---------- Endpoint prueba ----------
-app.get("/", (req, res) => res.send("Servidor funcionando en localhost ✅"));
-
-// ---------- Error global ----------
-app.use((err, req, res, next) => {
-  console.error("ERROR GLOBAL:", err.message);
-  if (err instanceof multer.MulterError) return res.status(400).json({ error: err.message });
-  res.status(500).json({ error: "Error interno del servidor" });
+io.on("connection", (socket) => {
+  console.log("✅ Socket conectado:", socket.id);
+  
+  socket.on("disconnect", () => {
+    console.log("❌ Socket desconectado:", socket.id);
+  });
 });
 
-
-// ---------- START SERVER ----------
-const PORT = process.env.PORT || 4019;
-server.listen(PORT, "localhost", () => {
-  console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
+// ---------- Start Server ----------
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
+  console.log(`🌍 Health check: http://localhost:${PORT}/`);
+  console.log(`📊 Estado MongoDB: ${mongoConnected ? '✅ Conectado' : '❌ Usando datos locales'}`);
+  console.log(`📦 Productos cargados: ${productos.length}`);
+  console.log(`💡 MongoDB se conectará automáticamente cuando esté disponible`);
 });
+
+// Verificar MongoDB periódicamente
+setInterval(() => {
+  if (!mongoConnected && mongoose.connection.readyState === 0) {
+    console.log('🔄 Reintentando conexión a MongoDB...');
+    connectMongoDB();
+  }
+}, 30000); // Intentar cada 30 segundos

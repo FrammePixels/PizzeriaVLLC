@@ -1,6 +1,6 @@
 {
   "name": "animeflv-fullstack",
-  "type": "commonjs", 
+  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -16,6 +16,8 @@
     "helmet": "^8.1.0",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "mysql2": "^3.15.2",

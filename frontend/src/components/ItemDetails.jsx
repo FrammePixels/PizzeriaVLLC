@@ -1,208 +1,89 @@
-import React, { useState } from 'react';
- const ItemDetails = () => {
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useParams } from 'react-router-dom';
+
+const ItemDetails = () => {
+  const { user, token, addToShop } = useAuth();
+  const { id } = useParams();
+
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [activeTab, setActiveTab] = useState('specs');
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
- 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`http://localhost:4019/api/products/${id}`, {
+          headers: { Authorization: token ? `Bearer ${token}` : '' },
+        });
+        if (!res.ok) throw new Error('Error al obtener el producto');
+        const data = await res.json();
+        setProduct(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id, token]);
+
+  const handleQuantityChange = (type) => {
+    setQuantity((prev) => (type === 'increment' ? prev + 1 : Math.max(1, prev - 1)));
+  };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    const cartItem = {
+      id: product.id || product._id,
+      name: product.name,
+      price: Number(product.price),
+      quantity,
+      image: product.images?.[0] || '/placeholder.jpg',
+    };
+
+    addToShop(cartItem);
+    alert(`✅ ${product.name} agregado al carrito!`);
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400">Cargando producto...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center bg-black text-red-500">{error}</div>;
+  if (!product) return null;
+
   return (
     <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <a href="#" className="hover:text-cyan-400 transition-colors">Home</a>
-          <span className="text-cyan-400">{'>'}</span>
-          <a href="#" className="hover:text-cyan-400 transition-colors">Products</a>
-          <span className="text-cyan-400">{'>'}</span>
-          <span className="text-gray-400">{product.category}</span>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
-           <div className="space-y-4">
-             <div className="relative border-2 border-cyan-400 overflow-hidden group bg-gray-900">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
-              <img 
-                src={product.images[selectedImage]} 
-                alt={product.name}
-                className="w-full h-96 object-cover"
-              />
-              <div className="absolute top-4 right-4 bg-black/80 border border-cyan-400 px-3 py-1 text-xs font-mono text-cyan-400">
-                IMG_{selectedImage + 1}/3
-              </div>
-               <div className="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-cyan-400"></div>
-              <div className="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-purple-600"></div>
-            </div>
-
-             <div className="grid grid-cols-3 gap-4">
-              {product.images.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`relative border-2 overflow-hidden transition-all duration-300 ${
-                    selectedImage === index 
-                      ? 'border-cyan-400 shadow-lg shadow-cyan-400/50' 
-                      : 'border-gray-700 hover:border-gray-500'
-                  }`}
-                >
-                  <img src={img} alt={`View ${index + 1}`} className="w-full h-24 object-cover" />
-                  {selectedImage === index && (
-                    <div className="absolute inset-0 bg-cyan-400/20"></div>
-                  )}
-                </button>
-              ))}
-            </div>
+          <div className="space-y-4">
+            {product.images?.length > 0 && (
+              <img src={product.images[selectedImage]} alt={product.name} className="w-full h-96 object-cover" />
+            )}
           </div>
 
-           <div className="space-y-6">
-            
-             <div className="flex items-center gap-2">
-              <span className="text-xs bg-gradient-to-r from-cyan-500 to-purple-600 px-3 py-1 font-mono">
-                {product.code}
-              </span>
-              <span className="text-xs bg-gray-800 border border-gray-700 px-3 py-1 text-gray-400">
-                {product.category}
-              </span>
+          <div className="space-y-6">
+            <h1 className="text-4xl font-black">{product.name}</h1>
+            <div className="flex gap-4 py-4">
+              <span className="text-4xl font-bold">${product.price}</span>
             </div>
-
-             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              {product.name}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className={i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-700'}>
-                    ★
-                  </span>
-                ))}
-                <span className="text-cyan-400 font-bold ml-2">{product.rating}</span>
-              </div>
-              <span className="text-gray-500 text-sm">({product.reviews} reviews)</span>
-            </div>
-
-             <div className="flex items-center gap-4 py-4 border-t border-b border-gray-800">
-              <div className="text-4xl font-bold text-cyan-400">
-                ${product.price}
-              </div>
-              <div className="text-xl text-gray-500 line-through">
-                ${product.oldPrice}
-              </div>
-              <div className="bg-pink-500 text-black px-3 py-1 text-sm font-bold">
-                -24% OFF
-              </div>
-            </div>
-
-             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-sm font-mono">
-                {product.stock} UNITS IN STOCK
-              </span>
-            </div>
-
-             <p className="text-gray-400 leading-relaxed">
-              {product.description}
-            </p>
-
-             <div className="grid grid-cols-2 gap-3">
-              {product.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm">
-                  <span className="text-cyan-400">▶</span>
-                  <span className="text-gray-300">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-             <div className="flex items-center gap-4 py-4">
-              <span className="text-gray-400 text-sm uppercase">Cantidad:</span>
+            <div className="flex items-center gap-4 py-4">
+              <span>Cantidad:</span>
               <div className="flex items-center border-2 border-gray-700">
-                <button
-                  onClick={() => handleQuantityChange('decrement')}
-                  className="px-4 py-2 border-r-2 border-gray-700 hover:bg-gray-800 transition-colors"
-                >
-                  -
-                </button>
-                <span className="px-6 py-2 font-bold">{quantity}</span>
-                <button
-                  onClick={() => handleQuantityChange('increment')}
-                  className="px-4 py-2 border-l-2 border-gray-700 hover:bg-gray-800 transition-colors"
-                >
-                  +
-                </button>
+                <button onClick={() => handleQuantityChange('decrement')}>-</button>
+                <span className="px-4">{quantity}</span>
+                <button onClick={() => handleQuantityChange('increment')}>+</button>
               </div>
             </div>
-
-             <div className="flex gap-4">
-              <button className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 py-4 font-bold uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-cyan-400/50">
+            <div className="flex gap-4">
+              <button
+                onClick={handleAddToCart}
+                className="bg-cyan-500 px-6 py-3 font-bold rounded-xl hover:bg-cyan-600 transition"
+              >
                 Add to Cart
               </button>
-              <button className="px-6 border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-black transition-all duration-300 font-bold">
-                ♥
-              </button>
             </div>
-
-             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-800">
-              <div className="text-center">
-                <div className="text-cyan-400 text-2xl mb-2">🚚</div>
-                <div className="text-xs text-gray-400">Free Shipping</div>
-              </div>
-              <div className="text-center">
-                <div className="text-purple-400 text-2xl mb-2">🔒</div>
-                <div className="text-xs text-gray-400">Secure Payment</div>
-              </div>
-              <div className="text-center">
-                <div className="text-pink-400 text-2xl mb-2">↻</div>
-                <div className="text-xs text-gray-400">30 Days Return</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-         <div className="mt-16">
-          <div className="flex gap-6 border-b-2 border-gray-800 mb-8">
-            {['specs', 'details', 'reviews'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-4 px-6 uppercase font-bold text-sm tracking-wider transition-all duration-300 relative ${
-                  activeTab === tab 
-                    ? 'text-cyan-400' 
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                {tab}
-                {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-purple-600"></div>
-                )}
-              </button>
-            ))}
-          </div>
-
-           <div className="bg-gray-900 border border-gray-800 p-8">
-            {activeTab === 'specs' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(product.specs).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-3 border-b border-gray-800">
-                    <span className="text-cyan-400 font-bold">{key}</span>
-                    <span className="text-gray-300">{value}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {activeTab === 'details' && (
-              <div className="text-gray-400 space-y-4">
-                <p>Experimenta la próxima evolución de la conectividad neural con el Neural Sync Pro X. Diseñado para profesionales que demandan el máximo rendimiento.</p>
-                <p>Esta interfaz neural revolucionaria combina procesamiento cuántico con arquitectura neural avanzada, permitiendo una integración perfecta entre tu mente y el ciberespacio.</p>
-              </div>
-            )}
-            {activeTab === 'reviews' && (
-              <div className="text-center text-gray-500 py-8">
-                <div className="text-4xl mb-4">⭐</div>
-                <p>Las reseñas se cargarán próximamente...</p>
-              </div>
-            )}
           </div>
         </div>
       </div>

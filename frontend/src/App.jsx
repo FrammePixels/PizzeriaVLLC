@@ -14,7 +14,7 @@ import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
 import Checkout from './components/Cheackout.jsx'
 
-import Error404 from './pages/Error/Error404.jsx'
+import Error404 from './pages/Error/Error404.jsx' 
 
 import { OffersProvider } from './components/OffersContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx' 
@@ -31,7 +31,7 @@ const App = () => {
                 <Route path='/' element={<Home />} />
                 <Route path='/about' element={<About />} />
                 <Route path='/contact' element={<Contact />} />
-                <Route path='/products' element={<ItemListContainer />} />
+                <Route path='/category/:category' element={<ItemListContainer />} />
                 <Route path='/products/:id' element={<SingleProduct />} />
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/login' element={<Login />} />

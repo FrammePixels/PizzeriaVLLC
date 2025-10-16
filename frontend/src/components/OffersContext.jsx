@@ -1,5 +1,4 @@
-// OffersContext.jsx - VERSIÓN CORREGIDA
-import React, { createContext, useState, useContext, useEffect } from 'react';
+ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const OffersContext = createContext();

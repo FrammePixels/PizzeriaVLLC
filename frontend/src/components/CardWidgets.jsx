@@ -1,40 +1,26 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaShoppingCart } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext'; 
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { FaShoppingCart } from 'react-icons/fa'
+import { useAuth } from '../context/AuthContext'
 
 const CardWidgets = () => {
-  const { bgCounts } = useAuth();
-  const itemCount = bgCounts();
+  const { cartShop, bgCounts } = useAuth()
+  const [itemCount, setItemCount] = useState(0)
+
+  useEffect(() => {
+    setItemCount(bgCounts())
+  }, [cartShop])
 
   return (
-    <Link to="/Cart" className="relative inline-block no-underline">
-      <div className="relative p-3 transition-all duration-300 hover:scale-110">
-        <div className="relative">
-          <FaShoppingCart className="text-2xl text-gray-700 hover:text-indigo-600 transition-colors duration-300" />
-          
-          {itemCount > 0 && (
-            <span className={`
-              absolute -top-2 -right-2 min-w-[24px] h-6 px-1.5 
-              flex items-center justify-center
-              text-xs font-bold text-white 
-              bg-gradient-to-r from-red-500 to-pink-500
-              rounded-full 
-              border-2 border-white
-              shadow-lg
-              animate-pulse
-              transition-all duration-300
-              ${itemCount > 99 ? 'text-[10px]' : ''}
-            `}>
-              {itemCount > 99 ? '99+' : itemCount}
-            </span>
-          )}
-        </div>
-        
-         <div className="absolute inset-0 rounded-full bg-indigo-200 opacity-0 hover:opacity-20 blur-md transition-opacity duration-300"></div>
-      </div>
+    <Link to="/cart" className="relative flex items-center p-2">
+      <FaShoppingCart className="text-cyan-400 hover:text-cyan-300 transition-colors" size={20} />
+      {itemCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-cyan-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.7)]">
+          {itemCount}
+        </span>
+      )}
     </Link>
-  );
+  )
 }
 
-export default CardWidgets;
+export default CardWidgets

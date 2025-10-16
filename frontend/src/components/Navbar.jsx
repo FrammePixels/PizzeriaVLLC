@@ -5,6 +5,7 @@ import { AiOutlineDashboard, AiOutlineLogout, AiOutlineSetting, AiOutlineLogin, 
 import { IoPeopleOutline } from "react-icons/io5"
 import { useAuth } from "../context/AuthContext"
 import CartWidgets from "./CardWidgets"  
+import MegaSale from "./MegaSale.jsx"
 export default function GamerNavbar() {
   const [search, setSearch] = useState("")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -71,16 +72,7 @@ export default function GamerNavbar() {
 
       <header className="w-full sticky top-0 z-50 backdrop-blur-xl bg-black/90 shadow-[0_0_30px_rgba(0,0,0,0.9)] border-b-2 border-cyan-500/50">
         {/* Cyber Banner */}
-        <div className="relative bg-gradient-to-r from-black via-gray-900 to-black border-b border-cyan-500/30 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDI1NSwyNTUsMC4xKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
-          <div className="relative flex items-center justify-center py-2 text-center">
-            <Flame size={18} className="text-orange-500 animate-bounce mr-2" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 font-black text-sm tracking-[0.2em] uppercase animate-pulse">
-              ⚡ MEGA SALE ⚡ 70% OFF EN TODO EL SITIO
-            </span>
-            <Flame size={18} className="text-orange-500 animate-bounce ml-2" />
-          </div>
-        </div>
+        <MegaSale/>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -183,16 +175,14 @@ export default function GamerNavbar() {
                 </div>
               </Link>
 
-              {/* Cart - Reemplazado por CartWidgets */}
-              <div className="relative group">
+               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded opacity-0 group-hover:opacity-30 blur transition-opacity"></div>
                 <div className="relative bg-black border-2 border-gray-800 group-hover:border-cyan-500 transition-all duration-200">
                   <CartWidgets />
                 </div>
               </div>
 
-              {/* User Menu */}
-              <div className="relative">
+               <div className="relative">
                 {user ? (
                   <>
                     <button onClick={toggleDropdown} className="relative group">

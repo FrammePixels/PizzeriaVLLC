@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Zap, Shield, Cpu, Eye } from "lucide-react";
+import { Zap, Shield  } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ItemCard = ({ item }) => {
@@ -8,15 +8,15 @@ const ItemCard = ({ item }) => {
 
   const handleAcquire = () => {
     if (item.ProductoId) {
-      navigate(`/productos/${item.ProductoId}`);
+      navigate(`/products/${item.ProductoId}`);
     } else {
-        alert('Producto no disponible temporalmente');
+        alert('Product not available right now');
     }
   };
 
   return (
     <div
-      className="relative bg-black border-2 border-cyan-500 rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 hover:border-pink-500 hover:shadow-2xl hover:shadow-pink-500/50"
+      className="relative bg-black border-2 border-cyan-500 rounded-lg overflow-hidden transition-all duration-300 transform hover:scale-105 hover:border-red-500 hover:shadow-2xl hover:shadow-pink-500/50"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -25,12 +25,18 @@ const ItemCard = ({ item }) => {
           : "0 0 15px rgba(6, 182, 212, 0.4)",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-pink-500/10 pointer-events-none" />
-      <div className="absolute top-3 right-3 z-10">
-        <span className="bg-cyan-500 text-black text-xs font-bold px-2 py-1 rounded uppercase tracking-wider animate-pulse">
-          {item.status || "Disponible"}
-        </span>
-      </div>
+             <div className="absolute top-3 right-3 z-10">
+              <span
+                className={`${
+                  item.status?.toLowerCase() === "Not Available" || item.Stock === 0
+                    ? "bg-red-600 text-white"
+                    : "bg-cyan-500 text-black"
+                } text-xs font-bold px-2 py-1 rounded uppercase tracking-wider animate-pulse`}
+              > 
+                {item.Status || (item.Stock === 0 ? "  Not Available" : "   Available")}
+              </span>
+            </div>
+
 
       <div className="relative h-48 bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-hidden">
         <img
@@ -54,7 +60,7 @@ const ItemCard = ({ item }) => {
 
       <div className="p-4 relative">
         <h3 className="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 uppercase tracking-wide">
-          {item.NombreProducto || 'Producto'}
+          {item.NombreProducto  }
         </h3>
  
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -78,12 +84,16 @@ const ItemCard = ({ item }) => {
               ${item.Precio || item.price || '0.00'}
             </div>
           </div>
-          <button 
-            onClick={handleAcquire}
-            className="bg-gradient-to-r from-cyan-500 to-pink-500 text-black font-bold px-6 py-2 rounded uppercase tracking-wide transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/50 hover:scale-110"
-          >
-            Adquirir
-          </button>
+              <button
+                onClick={handleAcquire}
+                disabled={!item.ProductoId || item.Stock === 0}
+                className={`bg-gradient-to-r from-blue-500 to-cyan-600 text-black font-bold px-6 py-2 rounded uppercase tracking-wide transition-all duration-300
+                  ${!item.ProductoId || item.Stock === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-cyan-500/90 hover:scale-110'}
+                `}
+              >
+                View Product
+              </button>
+
         </div>
 
         <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-cyan-500" />
@@ -100,7 +110,7 @@ export default function ItemList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:4019/api/productos");
+        const res = await fetch("http://localhost:4019/api/products");
         if (!res.ok) throw new Error("Error al obtener productos");
         const data = await res.json();
 
@@ -118,14 +128,10 @@ export default function ItemList() {
             stats: [
               {
                 label: "Stock",
-                value: item.Stock || "Disponible",
+                value: item.Stock  ,
                 icon: <Zap className="w-4 h-4 text-yellow-400" />
               },
-              {
-                label: "Categoría", 
-                value: item.Categoria || "General",
-                icon: <Shield className="w-4 h-4 text-pink-400" />
-              }
+    
             ]
           }));
 
