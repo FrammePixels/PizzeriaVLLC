@@ -8,7 +8,7 @@
     useEffect(() => {
         const getProducts = async () => {
         try {
-            const res = await fetch("http://localhost:4019/api/products");  
+            const res = await fetch("https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/");  
             if (!res.ok) throw new Error("Error al obtener productos");
             const data = await res.json();
 
