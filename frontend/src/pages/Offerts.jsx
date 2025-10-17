@@ -9,20 +9,15 @@ const Ofertas = () => {
     const fetchOffers = async () => {
       try {
         setLoading(true);
-<<<<<<< HEAD
-        const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/${id}`);
-=======
         
-        // ✅ CORREGIDO: Usar el endpoint correcto para ofertas
-        const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/productos/ofertas`);
->>>>>>> c90660c (Guardando cambios antes de rebase)
+         const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/productos/ofertas`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const offersData = await response.json();
-        console.log('🎯 Ofertas recibidas:', offersData);
+
         
         if (Array.isArray(offersData)) {
           // ✅ CORREGIDO: Usar propiedades correctas del backend
@@ -41,12 +36,10 @@ const Ofertas = () => {
           
           setOffers(formattedOffers);
         } else {
-          console.error('Se esperaba array pero se recibió:', typeof offersData);
-          setOffers([]);
+           setOffers([]);
         }
       } catch (error) {
-        console.error('Error fetching offers:', error);
-        setOffers([]); 
+         setOffers([]); 
       } finally {
         setLoading(false);
       }
@@ -78,11 +71,9 @@ const Ofertas = () => {
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-400 mb-4">
-            OFERTAS ESPECIALES
+            SPECIAL OFFERS
           </h1>
-          <p className="text-gray-400 text-lg">
-            Descubre nuestros productos en oferta con descuentos exclusivos
-          </p>
+ 
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

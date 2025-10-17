@@ -125,26 +125,15 @@ export default function ItemList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-<<<<<<< HEAD
-        console.log("🔄 Obteniendo productos...");
-        const res = await fetch("https://prickly-milli-cheanime-b581b454.koyeb.app/api/products");
-=======
-        console.log("🔄 Obteniendo productos desde localhost...");
-        // ✅ Usa tu backend local
-        const res = await fetch("https://prickly-milli-cheanime-b581b454.koyeb.app/api/productos/ofertas");
->>>>>>> c90660c (Guardando cambios antes de rebase)
+         // ✅ CORREGIDO: Agregar http:// antes de localhost
+        const res = await fetch("http://localhost:4019/api/products");
         if (!res.ok) throw new Error("Error al obtener productos");
         const data = await res.json();
 
-        console.log("📦 Datos del backend:", data);
-
+ 
         if (Array.isArray(data)) {
           const formattedProducts = data.map((item) => ({
             ...item,
-<<<<<<< HEAD
-            // ✅ Mantener todas las propiedades originales del backend
-=======
->>>>>>> c90660c (Guardando cambios antes de rebase)
             id: item.ProductoId || item.id,
             ProductoId: item.ProductoId || item.id,
             name: item.nombre || item.NombreProducto || item.name,
@@ -155,11 +144,6 @@ export default function ItemList() {
             category: item.categoria || item.category,
             en_oferta: item.en_oferta,
             precio_original: item.precio_original,
-<<<<<<< HEAD
-            
-            // ✅ Stats mejoradas
-=======
->>>>>>> c90660c (Guardando cambios antes de rebase)
             stats: [
               {
                 label: "Stock",
@@ -181,16 +165,11 @@ export default function ItemList() {
                 value: item.en_oferta ? "Special" : "Regular",
                 icon: <Zap className="w-4 h-4 text-pink-400" />
               }
-<<<<<<< HEAD
-            ].filter(stat => stat.value) // Filtrar stats vacías
-=======
             ].filter(stat => stat.value)
->>>>>>> c90660c (Guardando cambios antes de rebase)
           }));
 
           setProducts(formattedProducts);
-          console.log(`✅ ${formattedProducts.length} productos formateados`);
-        } else {
+         } else {
           console.warn('❌ Se esperaba array pero se recibió:', data);
           setProducts([]);
         }
@@ -206,6 +185,46 @@ export default function ItemList() {
     fetchData();
   }, []);
 
+   const handleAddToCart = async (quantity) => {
+        if (item.stock >= quantity) {
+            const updatedStock = item.stock - quantity;
+
+            const db = getFirestore();
+            const docRef = doc(db, 'productoId', item.id);
+            await updateDoc(docRef, { stock: updatedStock });
+
+            toast.success(`Has agregado ${quantity} al carrito`, {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+
+            setItem({ ...item, stock: updatedStock });
+
+            addCarrito({
+                id: item.id,
+                title: item.titulo,
+                costo: item.precio,
+                quantity: quantity,
+            });
+        } else {
+            toast.error('No hay suficiente stock disponible', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'dark',
+            });
+        }
+    };
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">

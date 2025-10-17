@@ -3,6 +3,10 @@ import { useItemCount } from '../hooks/useItemCounts'
 const Counts = () => {
   const { count, Increment, Decrement, addToShop } = useItemCount()
 
+
+ 
+ 
+
   return (
     <div className="flex flex-col items-center gap-4 p-4 bg-gray-800 rounded-lg w-64">
       <div className="flex items-center gap-4">

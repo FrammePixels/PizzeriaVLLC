@@ -11,12 +11,10 @@ export default function ItemListContainer({ showHeader = true }) {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        console.log("🔄 Obteniendo productos...");
-        const res = await fetch("https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/");  
+         const res = await fetch("https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/");  
         if (!res.ok) throw new Error("Error al obtener productos");
         const data = await res.json();
-        console.log("📦 Productos recibidos:", data);
-
+ 
         // ✅ Mapear las propiedades del backend a las que espera el frontend
         const itemsWithIcons = data.map((item) => ({
           // Propiedades del backend
@@ -38,8 +36,7 @@ export default function ItemListContainer({ showHeader = true }) {
 
         setProducts(itemsWithIcons);
       } catch (error) {
-        console.error("❌ Error al obtener productos:", error);
-        setError(error.message);
+         setError(error.message);
       } finally {
         setLoading(false);
       }

@@ -69,8 +69,7 @@ export const AuthProvider = ({ children }) => {
     initializeAuth()
   }, [])
 
-  // 🛒 Persistencia del carrito
-  useEffect(() => {
+   useEffect(() => {
     const storedCart = localStorage.getItem("cartShop")
     if (storedCart) setCartShop(JSON.parse(storedCart))
   }, [])
@@ -79,8 +78,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("cartShop", JSON.stringify(cartShop))
   }, [cartShop])
 
-  // 🛒 Carrito de compras (funciones de tu CartProvider)
-  const addToShop = (item) => {
+   const addToShop = (item) => {
     if (!item.id) {
       console.error('❌ El producto debe tener un ID')
       return
@@ -104,8 +102,9 @@ export const AuthProvider = ({ children }) => {
     setCartShop([])
   }
 
-  const PriceFinal = () =>
-    cartShop.reduce((acum, prod) => acum + prod.costo * prod.quantity, 0)
+const PriceFinal = () =>
+  cartShop.reduce((acum, prod) => acum + (prod.price || 0) * (prod.quantity || 0), 0)
+
 
   const TotalsProducts = () => {
     const totalQuantity = cartShop.reduce((acc, prod) => acc + prod.quantity, 0)
@@ -115,11 +114,10 @@ export const AuthProvider = ({ children }) => {
   const bgCounts = () =>
     cartShop.reduce((acum, prod) => acum + prod.quantity, 0)
 
-  // 💰 Descuento
-  const priceAfterDiscount = () => PriceFinal() * (1 - discount / 100)
+ const priceAfterDiscount = () => PriceFinal() * (1 - discount / 100)
   const applyDiscount = (percent) => setDiscount(percent)
 
-  // ⭐ Favoritos
+ 
   const addToFavorites = (item) => {
     if (!favorites.find(fav => fav.id === item.id)) setFavorites([...favorites, item])
   }
