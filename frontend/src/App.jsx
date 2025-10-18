@@ -8,6 +8,8 @@ import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import ItemListContainer from './components/ItemListContainer.jsx'
 import SingleProduct from './pages/SingleProduct.jsx'
+import Offerts from './pages/Offerts.jsx'
+
 import Contact from './pages/Contact.jsx'
 import Cart from './pages/Cart.jsx'
 import Register from './pages/Register.jsx'
@@ -32,7 +34,9 @@ const App = () => {
                 <Route path='/about' element={<About />} />
                 <Route path='/contact' element={<Contact />} />
                 <Route path='/category/:category' element={<ItemListContainer />} />
-                <Route path='/products/:id' element={<SingleProduct />} />
+                <Route path="/products/:id" element={<SingleProduct />} />
+
+                <Route path='/Offerts/:id' element={<Offerts />} />
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />

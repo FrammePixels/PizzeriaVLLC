@@ -23,7 +23,7 @@ const SingleProduct = () => {
       try {
          
         // ✅ Intentar obtener el producto específico
-        const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/${id}`);
+        const response = await fetch(`http://localhost:8000/api/products/${id}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

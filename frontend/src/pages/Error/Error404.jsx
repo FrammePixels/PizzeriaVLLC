@@ -117,10 +117,10 @@ export default function Cyberpunk404() {
               <Terminal className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
               <div>
                 <p className="text-cyan-300 font-mono text-sm mb-2">
-                  <span className="text-red-400">[ERROR]</span> Sistema Nexus no puede localizar el recurso solicitado
+                  <span className="text-red-400">[ERROR]</span> The requested website cannot be found or the page you are looking for has been removed
                 </p>
                 <p className="text-gray-400 font-mono text-sm">
-                  La página que buscas ha sido eliminada, movida o nunca existió en esta dimensión de la red.
+                 Please try again or contact the website administrator. 
                 </p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function Cyberpunk404() {
             >
               <span className="relative z-10 flex items-center space-x-2">
                 <Home className="w-5 h-5" />
-                <span>Volver al inicio</span>
+                <span>Return to home</span>
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
@@ -144,7 +144,7 @@ export default function Cyberpunk404() {
             <button className="group relative px-6 py-3 bg-gray-900/50 border-2 border-cyan-500/50 text-cyan-400 font-bold rounded uppercase tracking-wide transition-all duration-300 hover:border-pink-500 hover:text-pink-400 hover:shadow-lg hover:shadow-pink-500/30">
               <span className="flex items-center space-x-2">
                 <Search className="w-5 h-5" />
-                <span>Buscar</span>
+                <span>Search...</span>
               </span>
             </button>
 
@@ -155,7 +155,7 @@ export default function Cyberpunk404() {
             >
               <span className="flex items-center space-x-2">
                 <RefreshCw className="w-5 h-5 group-hover:animate-spin" />
-                <span>Reintentar</span>
+                <span>Retry</span>
               </span>
             </button>
 

@@ -10,7 +10,7 @@ const ItemList = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/products', {
+      const res = await fetch('http://localhost:4019/api/products', {
         headers: { Authorization: token ? `Bearer ${token}` : '' }
       });
       
