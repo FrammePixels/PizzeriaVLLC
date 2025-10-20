@@ -10,7 +10,7 @@ const Ofertas = () => {
       try {
         setLoading(true);
         
-         const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/productos/ofertas`);
+         const response = await fetch(`https://localhost:4019/api/productos/ofertas`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { ShoppingCart, Trash2, ChevronRight, Zap, Lock, AlertCircle } from 'lucide-react'
 
-export default function NeonCart() {
-  const { cartShop, removeItem, deleteCart, PriceFinal, priceAfterDiscount, applyDiscount } = useAuth()
+export default function Cart() {
+  const { cartShop, deleteCart, PriceFinal, priceAfterDiscount, applyDiscount } = useAuth()
 
   const [activeCode, setActiveCode] = useState(null)
   const [glowIndex, setGlowIndex] = useState(0)
@@ -78,63 +78,69 @@ export default function NeonCart() {
                 <p className="text-gray-600">Start adding some amazing products!</p>
               </div>
             ) : (
-              cartShop.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className="group bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-800 hover:border-gray-700 rounded-lg overflow-hidden transition-all duration-300"
-                  style={{
-                    animation: `slide-in-right 0.5s ease-out ${idx * 0.1}s both`,
-                    ...(glowIndex === idx && { animation: 'neon-pulse 2s ease-in-out' }),
-                  }}
-                >
-                  <div className="flex flex-col sm:flex-row gap-4 p-4">
-                    <div className="relative flex-shrink-0">
-                      <div className="w-full sm:w-28 h-28 bg-gray-800 rounded-lg overflow-hidden relative">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <ShoppingCart className="w-12 h-12 text-gray-700" />
+              cartShop.map((item, idx) => {
+                const price = Number(item.price) || 0
+                const quantity = Number(item.quantity) || 1
+                const totalItem = price * quantity
+
+                return (
+                  <div
+                    key={item.id}
+                    className="group bg-gray-900 bg-opacity-50 backdrop-blur-sm border border-gray-800 hover:border-gray-700 rounded-lg overflow-hidden transition-all duration-300"
+                    style={{
+                      animation: `slide-in-right 0.5s ease-out ${idx * 0.1}s both`,
+                      ...(glowIndex === idx && { animation: 'neon-pulse 2s ease-in-out' }),
+                    }}
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4 p-4">
+                      <div className="relative flex-shrink-0">
+                        <div className="w-full sm:w-28 h-28 bg-gray-800 rounded-lg overflow-hidden relative">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <ShoppingCart className="w-12 h-12 text-gray-700" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center text-black font-black text-sm">
+                          {quantity}
+                        </div>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-white mb-1 truncate">{item.name}</h3>
+                            <p className="text-xs text-gray-500">ID: {String(item.id).padStart(8, '0')}</p>
                           </div>
-                        )}
-                      </div>
-                      <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center text-black font-black text-sm">
-                        {item.quantity}
+                          <button
+                            onClick={() => deleteCart(item.id)}
+                            className="flex-shrink-0 w-9 h-9 rounded-lg bg-gray-800 hover:bg-red-600 border border-gray-700 hover:border-red-500 flex items-center justify-center transition-all group"
+                          >
+                            <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-white" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xs text-gray-500">Unit:</span>
+                            <span className="text-sm text-cyan-400 font-semibold">${price.toFixed(2)}</span>
+                          </div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xs text-gray-500">Total:</span>
+                            <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                              ${totalItem.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-white mb-1 truncate">{item.name}</h3>
-                          <p className="text-xs text-gray-500">ID: {String(item.id).padStart(8, '0')}</p>
-                        </div>
-                        <button
-                          onClick={() => deleteCart(item.id)}
-                          className="flex-shrink-0 w-9 h-9 rounded-lg bg-gray-800 hover:bg-red-600 border border-gray-700 hover:border-red-500 flex items-center justify-center transition-all group"
-                        >
-                          <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-white" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-xs text-gray-500">Unit:</span>
-                          <span className="text-sm text-cyan-400 font-semibold">${item.price?.toFixed(2)}</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-xs text-gray-500">Total:</span>
-                          <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 via-pink-500 to-orange-500 opacity-50 group-hover:opacity-100 transition-opacity" />
                   </div>
-
-                  <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 via-pink-500 to-orange-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                </div>
-              ))
+                )
+              })
             )}
 
             {cartShop.length > 0 && (
@@ -174,7 +180,6 @@ export default function NeonCart() {
                   </div>
                 </div>
 
-                {/* Botón final corregido */}
                 {cartShop.length === 0 ? (
                   <div className="w-full py-4 rounded-lg font-bold text-white bg-gray-800 opacity-40 cursor-not-allowed flex items-center justify-center gap-2">
                     <AlertCircle className="w-5 h-5" />

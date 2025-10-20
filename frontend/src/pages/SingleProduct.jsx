@@ -11,69 +11,59 @@ const SingleProduct = () => {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { id } = useParams();
+useEffect(() => {
+  const fetchData = async () => {
+    if (!id) {
+      setError('ID de producto no proporcionado');
+      setLoading(false);
+      return;
+    }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!id) {
-        setError('ID de producto no proporcionado');
-        setLoading(false);
-        return;
-      }
-      
-      try {
-         
-        // ✅ Intentar obtener el producto específico
-        const response = await fetch(`https://prickly-milli-cheanime-b581b454.koyeb.app/api/products/${id}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const productData = await response.json();
-         
-        if (productData) {
-          setItem(productData);
-        } else {
-          // Si no encuentra directamente, buscar en la lista general
-          await fetchFromAllProducts(id);
-        }
-      } catch (err) {
-         // Intentar buscar en la lista general como fallback
+    try {
+      // Fetch directo
+      const response = await fetch(`http://localhost:4019/api/productos/${id}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const productData = await response.json();
+
+      if (productData && Object.keys(productData).length > 0) {
+        setItem(productData);
+      } else {
+        // Si no encuentra, fallback a todos
         await fetchFromAllProducts(id);
       }
-    };
+    } catch (err) {
+      await fetchFromAllProducts(id);
+    } finally {
+      setLoading(false); // 🔹 Asegurarse de siempre terminar loading
+    }
+  };
 
-    const fetchFromAllProducts = async (productId) => {
-      try {
-         const allResponse = await fetch('https://prickly-milli-cheanime-b581b454.koyeb.app/api/products');
-        
-        if (!allResponse.ok) {
-          throw new Error('Error al cargar los productos');
-        }
-        
-        const productos = await allResponse.json();
-         
-        // Buscar el producto por diferentes campos de ID
-        const rawProduct = productos.find(p => 
-          p.ProductoId == productId || 
-          p.id == productId || 
+  const fetchFromAllProducts = async (productId) => {
+    try {
+      const allResponse = await fetch('http://localhost:4019/api/productos');
+      if (!allResponse.ok) throw new Error('Error al cargar los productos');
+      const productos = await allResponse.json();
+
+      const rawProduct = productos.find(
+        (p) =>
+          p.ProductoId == productId ||
+          p.id == productId ||
           p.ProductId == productId
-        );
-        
-        if (rawProduct) {
-           setItem(rawProduct);
-        } else {
-           setError('Producto no encontrado');
-        }
-      } catch (err) {
-         setError('Error al cargar el producto');
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    fetchData();
-  }, [id]);
+      if (rawProduct) {
+        setItem(rawProduct);
+      } else {
+        setError('Producto no encontrado');
+      }
+    } catch (err) {
+      setError('Error al cargar el producto');
+    }
+  };
+
+  fetchData();
+}, [id]);
+
 
   const handleAddToCart = () => {
     if (item) {

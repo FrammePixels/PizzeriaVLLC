@@ -12,7 +12,7 @@ import Contact from './pages/Contact.jsx'
 import Cart from './pages/Cart.jsx'
 import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
-import Checkout from './components/Cheackout.jsx'
+import Cheackout from './components/Cheackout.jsx'
 
 import Error404 from './pages/Error/Error404.jsx' 
 
@@ -36,7 +36,7 @@ const App = () => {
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
-                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/checkout" element={<Cheackout />} />
                 <Route path='*' element={<Error404 />} />
               </Routes>
             </main>

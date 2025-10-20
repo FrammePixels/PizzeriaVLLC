@@ -126,7 +126,7 @@ export default function ItemList() {
     const fetchData = async () => {
       try {
          // ✅ CORREGIDO: Agregar http:// antes de localhost
-        const res = await fetch("http://localhost:4019/api/products");
+        const res = await fetch("http://localhost:4019/api/productos");
         if (!res.ok) throw new Error("Error al obtener productos");
         const data = await res.json();
 
