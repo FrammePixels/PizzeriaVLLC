@@ -19,7 +19,6 @@ useEffect(() => {
       return;
     }
 
-<<<<<<< HEAD
     try {
       // Fetch directo
       const response = await fetch(`http://localhost:4019/api/productos/${id}`);
@@ -30,35 +29,6 @@ useEffect(() => {
         setItem(productData);
       } else {
         // Si no encuentra, fallback a todos
-=======
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!id) {
-        setError('ID de producto no proporcionado');
-        setLoading(false);
-        return;
-      }
-      
-      try {
-         
-        // ✅ Intentar obtener el producto específico
-        const response = await fetch(`http://localhost:8000/api/products/${id}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const productData = await response.json();
-         
-        if (productData) {
-          setItem(productData);
-        } else {
-          // Si no encuentra directamente, buscar en la lista general
-          await fetchFromAllProducts(id);
-        }
-      } catch (err) {
-         // Intentar buscar en la lista general como fallback
->>>>>>> 521318ca93b9d1eb69454b53e8539f889b36e374
         await fetchFromAllProducts(id);
       }
     } catch (err) {
