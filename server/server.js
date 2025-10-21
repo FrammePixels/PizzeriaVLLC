@@ -1,12 +1,6 @@
-// =====================================================
-// 🚀 Servidor Backend - Limpio y Corregido
-// =====================================================
-
-console.log("🚀 Iniciando server.js ...");
-
-require("dotenv").config();
+ console.log("🚀 Iniciando server.js ...");
 const express = require("express");
-const mysql = require("mysql2/promise");
+const db = require("./db.js");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require("multer");
@@ -22,11 +16,13 @@ const app = express();
 const server = http.createServer(app);
 app.set("trust proxy", 1);
 
-// ---------- ENV & CONFIG ----------
- const IS_PRODUCTION = process.env.NODE_ENV === "production";
+// ---------- CONFIG ----------
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const FRONTEND_URL = IS_PRODUCTION
   ? "https://cheanime.gamer.gd"
   : ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"];
+
+const SECRET_KEY = process.env.JWT_SECRET;
 
 console.log("🔐 JWT Secret cargado");
 
@@ -65,26 +61,7 @@ app.use(
   express.static(uploadsPath)
 );
 
-// ---------- BASE DE DATOS ----------
-let db;
-try {
-  db = mysql.createPool({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "",
-    database: process.env.DB_NAME || "nexusgammer",
-    waitForConnections: true,
-    connectionLimit: 10,
-    acquireTimeout: 60000,
-    connectTimeout: 60000,
-  });
-
-  console.log("✅ Conectado a la base de datos local (MySQL)");
-} catch (err) {
-  console.error("❌ Error crítico MySQL:", err.message);
-  process.exit(1);
-}
-
+// ---------- DB QUERY ----------
 const dbQuery = async (sql, params = []) => {
   try {
     const [rows] = await db.execute(sql, params);
@@ -183,19 +160,8 @@ app.post("/api/productos", upload.single("image"), async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
-//Pagos
-app.post ('/api/payments', async(req, res)=>{
-  const {amount,currency} =req.body
-  try{
-    const paymentIntent = await stripTypeScriptTypes.paymentIntent.CREATE({
-      amount,currency})
-      res.status(200).send({clientSecret:paymentIntent.client_secret})
-  } catch(error){
-    console.log('error inten payment ', error)
-    res.status(500).send({error: error.message})
-    }
-})
-//Usuarios
+
+// Usuarios
 app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -217,8 +183,8 @@ app.post("/api/register", async (req, res) => {
     const { nick, email, password } = req.body;
     const hashed = await bcrypt.hash(password, 10);
     const result = await dbQuery(
-      "INSERT INTO usuarios (Nombre, Email, f, Rol, Estado,FechRegistro) VALUES (?, ?, ?, 'user', ?,?)",
-    [nick, email, hashed, Estado, FechRegistro]
+      "INSERT INTO usuarios (Nombre, EmailUsuarios, PasswordUsuarios, RolUsuarios, Estado, FechRegistro) VALUES (?, ?, ?, 'user', 1, NOW())",
+      [nick, email, hashed]
     );
     res.json({ success: true, userId: result.insertId });
   } catch (error) {
@@ -242,13 +208,13 @@ const bloquearRuta = (req, res) => {
 const RUTAS_BLOQUEADAS = ["/api/offerts", "/api/posts", "/admin", "/config"];
 RUTAS_BLOQUEADAS.forEach(ruta => app.use(ruta, bloquearRuta));
 
- 
+// ---------- INICIAR SERVIDOR ----------
 const PORT = process.env.PORT || 4019;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Servidor ejecutándose en modo: ${IS_PRODUCTION ? "PRODUCCIÓN" : "DESARROLLO"}`);
   console.log(`🌐 URLs permitidas para CORS: ${FRONTEND_URL}`);
   console.log(`🔌 Servidor backend: http://localhost:${PORT}`);
   console.log(`📁 Carpeta de uploads: ${uploadsPath}`);
-  console.log(`🗄️ Base de datos: ${process.env.DB_NAME || "nexusgammer"}`);
+  console.log(`🗄️ Base de datos: ${process.env.DB_NAME}`);
   console.log(`✅ Todo cargado correctamente.`);
 });
