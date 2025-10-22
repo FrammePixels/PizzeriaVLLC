@@ -11,8 +11,7 @@ export default function CyberpunkLogin() {
     setIsLoading(true);
 
     try {
-      // 🚀 Aquí llamamos a tu backend para login
-      const response = await fetch('https://prickly-milli-cheanime-b581b454.koyeb.app/api/login', {  
+       const response = await fetch('http://localhost:4019/api/login', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -24,13 +23,10 @@ export default function CyberpunkLogin() {
 
       if (response.ok) {
         setIsLoading(false);
-        alert(`Bienvenido ${data.username || data.email}`);
-        // Aquí podés redirigir a otra página con react-router
-        // navigate('/dashboard');
+       //   ('/dashboard');
       } else {
         setIsLoading(false);
-        alert(`Error al iniciar sesión: ${data.message}`);
-      }
+       }
 
     } catch (error) {
       setIsLoading(false);

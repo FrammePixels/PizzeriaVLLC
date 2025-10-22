@@ -1,6 +1,6 @@
  console.log("🚀 Iniciando server.js ...");
 const express = require("express");
-const db = require("./db.js");
+const db = require("./src/config/db.js");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require("multer");
@@ -146,6 +146,54 @@ app.get("/api/productos/:id", async (req, res) => {
   }
 });
 
+// Actualizar producto
+app.put("/api/productos/:id", verificarToken, upload.single("image"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, precio, stock } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // Si hay imagen, eliminamos la anterior
+    const productoActual = await dbQuery("SELECT imagen FROM productos WHERE ProductoId = ?", [id]);
+    if (!productoActual.length) return res.status(404).json({ message: "Producto no encontrado" });
+
+    if (image && productoActual[0].imagen) {
+      const oldImagePath = path.join(uploadsPath, path.basename(productoActual[0].imagen));
+      if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+    }
+
+    const result = await dbQuery(
+      "UPDATE productos SET nombre = ?, precio = ?, stock = ?, imagen = ? WHERE ProductoId = ?",
+      [nombre, precio, stock, image, id]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error actualizando producto:", error);
+    res.status(500).json({ success: false });
+  }
+});
+
+// Eliminar producto
+app.delete("/api/productos/:id", verificarToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await dbQuery("SELECT imagen FROM productos WHERE ProductoId = ?", [id]);
+    if (!producto.length) return res.status(404).json({ message: "Producto no encontrado" });
+
+    // Eliminar imagen si existe
+    if (producto[0].imagen) {
+      const imagePath = path.join(uploadsPath, path.basename(producto[0].imagen));
+      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    }
+
+    await dbQuery("DELETE FROM productos WHERE ProductoId = ?", [id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error eliminando producto:", error);
+    res.status(500).json({ success: false });
+  }
+});
+
 app.post("/api/productos", upload.single("image"), async (req, res) => {
   try {
     const { nombre, precio, stock } = req.body;
@@ -165,31 +213,124 @@ app.post("/api/productos", upload.single("image"), async (req, res) => {
 app.post("/api/login", loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
-    const rows = await dbQuery("SELECT * FROM usuarios WHERE EmailUsuarios = ?", [email]);
-    if (!rows.length) return res.status(404).json({ message: "Usuario no encontrado" });
+    
+     if (!email || !password) {
+      return res.status(400).json({ message: "Email y contraseña son requeridos" });
+    }
+    
+     const rows = await dbQuery("SELECT * FROM usuarios WHERE UsersEmail = ?", [email]);
+    
+    if (!rows.length) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    
     const user = rows[0];
-    const match = await bcrypt.compare(password, user.PasswordUsuarios);
-    if (!match) return res.status(401).json({ message: "Contraseña incorrecta" });
-    const token = generarToken(user.Id, user.RolUsuarios);
-    res.json({ success: true, token });
+    
+     if (!user.HashPw || typeof user.HashPw !== 'string') {
+      return res.status(500).json({ message: "Error en el almacenamiento de contraseña" });
+    }
+    
+     const match = await bcrypt.compare(password, user.HashPw);
+    if (!match) {
+      return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
+    
+     const token = generarToken(user.Id, user.Rol);
+    
+     res.json({ 
+      success: true, 
+      token, 
+      rol: user.Rol,
+      redirect: user.Rol === 'admin' ? '/staff/dashboard' : '/dashboard'
+    });
+    
   } catch (error) {
     console.error("❌ Error login:", error);
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 });
 
 app.post("/api/register", async (req, res) => {
   try {
-    const { nick, email, password } = req.body;
-    const hashed = await bcrypt.hash(password, 10);
+    const { NickName, UsersEmail, HashPw } = req.body;
+    
+    // Validación de dominio permitido
+    const allowedDomains = [
+      'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com',
+      'aol.com', 'protonmail.com', 'mail.com', 'zoho.com', 'yandex.com',
+      'live.com', 'msn.com', 'gmx.com', 'tutanota.com', 'hushmail.com'
+    ];
+    
+    const emailDomain = UsersEmail.split('@')[1]?.toLowerCase();
+    
+    if (!emailDomain || !allowedDomains.includes(emailDomain)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Dominio de correo no permitido. Use un servicio de correo común." 
+      });
+    }
+
+    const hashed = await bcrypt.hash(HashPw, 10);
+    
     const result = await dbQuery(
-      "INSERT INTO usuarios (Nombre, EmailUsuarios, PasswordUsuarios, RolUsuarios, Estado, FechRegistro) VALUES (?, ?, ?, 'user', 1, NOW())",
-      [nick, email, hashed]
+      "INSERT INTO usuarios (NickName, UsersEmail, HashPw, Rol, Estado, created_at) VALUES (?, ?, ?, 'user', 1, NOW())",
+      [NickName, UsersEmail, hashed]
     );
+    
     res.json({ success: true, userId: result.insertId });
   } catch (error) {
     console.error("❌ Error registrando usuario:", error);
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get("/api/check-register", async (req, res) => {
+  try {
+    const { nickname, email } = req.query;
+
+     if (!nickname && !email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Proporciona nickname o email para verificar" 
+      });
+    }
+
+     let query = "SELECT NickName, UsersEmail FROM usuarios WHERE ";
+    const params = [];
+    
+    if (nickname) {
+      query += "NickName = ?";
+      params.push(nickname);
+    }
+    
+    if (email) {
+      if (nickname) query += " OR ";  
+      query += "UsersEmail = ?";
+      params.push(email);
+    }
+
+    const results = await dbQuery(query, params);
+    
+     const nicknameExists = results.some(user => user.NickName === nickname);
+    const emailExists = results.some(user => user.UsersEmail === email);
+
+    res.json({
+      success: true,
+      data: {
+        nicknameExists,
+        emailExists,
+        message: nicknameExists || emailExists 
+          ? "Algunos datos ya están en uso" 
+          : "Datos disponibles"
+      }
+    });
+
+  } catch (error) {
+    console.error("❌ Error en check register:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error al verificar disponibilidad" 
+    });
   }
 });
 
@@ -211,8 +352,7 @@ RUTAS_BLOQUEADAS.forEach(ruta => app.use(ruta, bloquearRuta));
 // ---------- INICIAR SERVIDOR ----------
 const PORT = process.env.PORT || 4019;
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Servidor ejecutándose en modo: ${IS_PRODUCTION ? "PRODUCCIÓN" : "DESARROLLO"}`);
-  console.log(`🌐 URLs permitidas para CORS: ${FRONTEND_URL}`);
+   console.log(`🌐 URLs permitidas para CORS: ${FRONTEND_URL}`);
   console.log(`🔌 Servidor backend: http://localhost:${PORT}`);
   console.log(`📁 Carpeta de uploads: ${uploadsPath}`);
   console.log(`🗄️ Base de datos: ${process.env.DB_NAME}`);

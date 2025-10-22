@@ -79,15 +79,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("cartShop", JSON.stringify(cartShop))
   }, [cartShop])
 
-  // 🛒 Carrito
-  const addToShop = (item) => {
+   const addToShop = (item) => {
     if (!item.id) {
       console.error('❌ El producto debe tener un ID')
       return
     }
 
-    // Asegurarse que price y quantity sean números
-    const newItem = {
+     const newItem = {
       ...item,
       price: Number(item.price) || 0,
       quantity: Number(item.quantity) || 1,
